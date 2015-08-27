@@ -1,19 +1,41 @@
 package main
 
 import (
-	"crypto/md5"
 	"fmt"
 	"github.com/codegangsta/cli"
 	"io/ioutil"
 	"os"
-	"os/exec"
 	"path"
 )
 
+var appHelpTemplate = `NAME:
+   {{.Name}} {{if .Usage}}- {{ . }}{{end}}
+
+USAGE:
+   {{.Name}} [options] <path>
+   {{if .Version}}
+VERSION:
+   {{.Version}}
+   {{end}}{{if len .Authors}}
+AUTHOR(S):
+   {{range .Authors}}{{ . }}{{end}}
+   {{end}}{{if .Flags}}
+GLOBAL OPTIONS:
+   {{range .Flags}}{{.}}
+   {{end}}{{end}}{{if .Copyright }}
+COPYRIGHT:
+   {{.Copyright}}
+   {{end}}
+`
+
 func main() {
+	cli.AppHelpTemplate = appHelpTemplate
+
 	app := cli.NewApp()
 	app.Name = "dmlivewiki_checksum"
 	app.Usage = "" // todo
+	app.Author = `Qais "qaisjp" Patankar`
+	app.Email = "me@qaisjp.com"
 
 	app.Flags = []cli.Flag{
 		cli.BoolFlag{

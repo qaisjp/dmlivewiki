@@ -1,8 +1,11 @@
 package main
 
 import (
+	"crypto/md5"
 	"fmt"
+	"io/ioutil"
 	"os"
+	"os/exec"
 	"path"
 )
 
