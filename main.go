@@ -10,6 +10,11 @@ import (
 )
 
 func main() {
+	if len(os.Args) == 1 {
+		fmt.Println("Syntax: dmlivewiki_checksum <path> [-y]")
+		return
+	}
+
 	filepath := os.Args[1]
 
 	// Ignore error, it returns false
@@ -27,7 +32,6 @@ func main() {
 	files, _ := ioutil.ReadDir(filepath)
 	for _, file := range files {
 		if file.IsDir() {
-
 			ffp := createFile(filepath, file.Name(), "ffp")
 			processDirectory(path.Join(filepath, file.Name()), 1, ffp, "ffp")
 			ffp.Close()
