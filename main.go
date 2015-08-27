@@ -101,7 +101,7 @@ func ffpParse(filepath string, name string, depth int, out *os.File) {
 	}
 
 	data, err := exec.Command(
-		"metaflac64",
+		"metaflac",
 		"--show-md5sum",
 		path.Join(filepath, name),
 	).Output()
