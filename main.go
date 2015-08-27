@@ -33,8 +33,8 @@ func main() {
 			ffp.Close()
 
 			md5 := createFile(filepath, file.Name(), "md5")
-			defer md5.Close()
 			processDirectory(path.Join(filepath, file.Name()), 1, md5, "md5")
+			md5.Close()
 		}
 	}
 }
