@@ -6,15 +6,27 @@ import (
 	"path"
 )
 
-func createFile(filepath string, subdir string, ext string) *os.File {
-	filename := path.Join(filepath, subdir, subdir+"."+ext)
-
+func createFile(filename string) *os.File {
 	fmt.Println("Creating", filename+"...")
 	f, err := os.Create(filename)
 	if err != nil {
 		panic(f)
 	}
 	return f
+}
+
+func removeFile(filename string) {
+	fmt.Printf("Removing %s...", filename)
+
+	err := os.Remove(filename)
+	if err != nil {
+		if os.IsNotExist(err) {
+			fmt.Println(" does not exist!")
+			return
+		}
+		panic(err)
+	}
+	fmt.Println(" success!")
 }
 
 func isDirectory(filepath string) (bool, os.FileInfo, error) {

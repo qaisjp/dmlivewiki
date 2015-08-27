@@ -24,6 +24,10 @@ func main() {
 			Name:  "single, s",
 			Usage: "parse the directory given, not the subdirectories",
 		},
+		cli.BoolFlag{
+			Name:  "delete",
+			Usage: "instead of creating files, delete files",
+		},
 	}
 
 	app.Action = mainAction
@@ -53,26 +57,33 @@ func mainAction(c *cli.Context) {
 	}
 
 	if c.Bool("single") {
-		processPath(path.Dir(filepath), fileInfo.Name())
+		processPath(path.Dir(filepath), fileInfo.Name(), c.Bool("delete"))
 		return
 	}
 
 	files, _ := ioutil.ReadDir(filepath)
 	for _, file := range files {
 		if file.IsDir() {
-			processPath(filepath, file.Name())
+			processPath(filepath, file.Name(), c.Bool("delete"))
 		}
 	}
 }
 
-func processPath(filepath string, name string) {
+func processPath(filepath string, name string, deleteMode bool) {
 	directory := path.Join(filepath, name)
+	filename := path.Join(directory, name+".")
 
-	ffp := createFile(filepath, name, "ffp")
+	if deleteMode {
+		removeFile(filename + "ffp")
+		removeFile(filename + "md5")
+		return
+	}
+
+	ffp := createFile(filename + "ffp")
 	processDirectory(directory, 1, ffp, "ffp")
 	ffp.Close()
 
-	md5 := createFile(filepath, name, "md5")
+	md5 := createFile(filename + "md5")
 	processDirectory(directory, 1, md5, "md5")
 	md5.Close()
 }
