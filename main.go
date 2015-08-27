@@ -83,7 +83,7 @@ func processDirectory(filepath string, depth int, out *os.File, mode string) {
 
 		if file.IsDir() {
 			processDirectory(path.Join(filepath, name), depth+1, out, mode)
-		} else if ext := path.Ext(name); ext != ".md5" && !file.IsDir() {
+		} else if (path.Ext(name) != ".md5") && !file.IsDir() {
 			if result := parser(filepath, name, depth); result != "" {
 				out.WriteString(result)
 			}
