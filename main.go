@@ -71,7 +71,7 @@ func processDirectory(filepath string, depth int, out *os.File, mode string) {
 		return
 	}
 
-	var parser func(string, string, int, *os.File)
+	var parser func(string, string, int) string
 	if mode == "ffp" {
 		parser = ffpParse
 	} else if mode == "md5" {
@@ -84,24 +84,26 @@ func processDirectory(filepath string, depth int, out *os.File, mode string) {
 		if file.IsDir() {
 			processDirectory(path.Join(filepath, name), depth+1, out, mode)
 		} else if ext := path.Ext(name); ext != ".md5" && !file.IsDir() {
-			parser(filepath, name, depth, out)
+			if result := parser(filepath, name, depth); result != "" {
+				out.WriteString(result)
+			}
 		}
 	}
 }
 
-func md5Parse(filepath string, name string, depth int, out *os.File) {
+func md5Parse(filepath string, name string, depth int) string {
 	data, err := ioutil.ReadFile(path.Join(filepath, name))
 
 	if err != nil {
 		panic(err)
 	}
 
-	out.WriteString(fmt.Sprintf("%x *%s%s\n", md5.Sum(data), getLastPathComponents(filepath, depth), name))
+	return fmt.Sprintf("%x *%s%s\n", md5.Sum(data), getLastPathComponents(filepath, depth), name)
 }
 
-func ffpParse(filepath string, name string, depth int, out *os.File) {
+func ffpParse(filepath string, name string, depth int) string {
 	if path.Ext(name) != ".flac" {
-		return
+		return ""
 	}
 
 	data, err := exec.Command(
@@ -114,5 +116,5 @@ func ffpParse(filepath string, name string, depth int, out *os.File) {
 		panic(err)
 	}
 
-	out.WriteString(fmt.Sprintf("%s%s:%s", getLastPathComponents(filepath, depth), name, data))
+	return fmt.Sprintf("%s%s:%s", getLastPathComponents(filepath, depth), name, data)
 }
