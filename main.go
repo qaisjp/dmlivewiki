@@ -20,6 +20,10 @@ func main() {
 			Name:  "yes, y",
 			Usage: "skip the confirmation input",
 		},
+		cli.BoolFlag{
+			Name:  "single, s",
+			Usage: "parse the directory given, not the subdirectories",
+		},
 	}
 
 	app.Action = mainAction
@@ -35,11 +39,10 @@ func mainAction(c *cli.Context) {
 	}
 
 	filepath := c.Args()[0]
-	print(filepath)
 
 	// Ignore error, it returns false
 	// even if it doesn't exist
-	isDirectory, _ := isDirectory(filepath)
+	isDirectory, fileInfo, _ := isDirectory(filepath)
 	if !isDirectory {
 		fmt.Println("Error: target is not a directory")
 		return
@@ -49,18 +52,29 @@ func mainAction(c *cli.Context) {
 		return
 	}
 
+	if c.Bool("single") {
+		processPath(path.Dir(filepath), fileInfo.Name())
+		return
+	}
+
 	files, _ := ioutil.ReadDir(filepath)
 	for _, file := range files {
 		if file.IsDir() {
-			ffp := createFile(filepath, file.Name(), "ffp")
-			processDirectory(path.Join(filepath, file.Name()), 1, ffp, "ffp")
-			ffp.Close()
-
-			md5 := createFile(filepath, file.Name(), "md5")
-			processDirectory(path.Join(filepath, file.Name()), 1, md5, "md5")
-			md5.Close()
+			processPath(filepath, file.Name())
 		}
 	}
+}
+
+func processPath(filepath string, name string) {
+	directory := path.Join(filepath, name)
+
+	ffp := createFile(filepath, name, "ffp")
+	processDirectory(directory, 1, ffp, "ffp")
+	ffp.Close()
+
+	md5 := createFile(filepath, name, "md5")
+	processDirectory(directory, 1, md5, "md5")
+	md5.Close()
 }
 
 func shouldContinue(c *cli.Context, filepath string) bool {
@@ -70,7 +84,12 @@ func shouldContinue(c *cli.Context, filepath string) bool {
 		return true
 	}
 
-	fmt.Println("The following filepath will be processed: ", filepath)
+	mode := "batch"
+	if c.Bool("single") {
+		mode = "single"
+	}
+
+	fmt.Printf("The following filepath (%s mode) will be processed: %s\n", mode, filepath)
 	fmt.Print("Continue? (y/n): ")
 	text := ""
 	fmt.Scanln(&text)

@@ -17,12 +17,12 @@ func createFile(filepath string, subdir string, ext string) *os.File {
 	return f
 }
 
-func isDirectory(filepath string) (bool, error) {
+func isDirectory(filepath string) (bool, os.FileInfo, error) {
 	fileInfo, err := os.Stat(filepath)
 	if err != nil {
-		return false, err
+		return false, nil, err
 	}
-	return fileInfo.IsDir(), err
+	return fileInfo.IsDir(), fileInfo, err
 }
 
 func getLastPathComponents(filepath string, depth int) (absPath string) {
