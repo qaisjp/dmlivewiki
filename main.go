@@ -17,7 +17,7 @@ func main() {
 
 	app.Flags = []cli.Flag{
 		cli.BoolFlag{
-			Name:  "yes, y",
+			Name:  "force, f",
 			Usage: "skip the confirmation input",
 		},
 		cli.BoolFlag{
