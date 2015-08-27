@@ -3,6 +3,7 @@ package main
 import (
 	"crypto/md5"
 	"fmt"
+	"github.com/codegangsta/cli"
 	"io/ioutil"
 	"os"
 	"os/exec"
@@ -10,12 +11,31 @@ import (
 )
 
 func main() {
-	if len(os.Args) == 1 {
-		fmt.Println("Syntax: dmlivewiki_checksum <path> [-y]")
+	app := cli.NewApp()
+	app.Name = "dmlivewiki_checksum"
+	app.Usage = "" // todo
+
+	app.Flags = []cli.Flag{
+		cli.BoolFlag{
+			Name:  "yes, y",
+			Usage: "skip the confirmation input",
+		},
+	}
+
+	app.Action = mainAction
+	app.Version = "1.0.2"
+
+	app.Run(os.Args)
+}
+
+func mainAction(c *cli.Context) {
+	if len(c.Args()) != 1 {
+		fmt.Println("Syntax: dmlivewiki_checksum [options] <path>")
 		return
 	}
 
-	filepath := os.Args[1]
+	filepath := c.Args()[0]
+	print(filepath)
 
 	// Ignore error, it returns false
 	// even if it doesn't exist
@@ -25,7 +45,7 @@ func main() {
 		return
 	}
 
-	if !shouldContinue(filepath) {
+	if !shouldContinue(c, filepath) {
 		return
 	}
 
@@ -43,13 +63,11 @@ func main() {
 	}
 }
 
-func shouldContinue(filepath string) bool {
+func shouldContinue(c *cli.Context, filepath string) bool {
 	// Ask to continue or just process?
 	// Hacky!
-	if len(os.Args) > 2 {
-		if os.Args[2] == "-y" {
-			return true
-		}
+	if c.Bool("yes") {
+		return true
 	}
 
 	fmt.Println("The following filepath will be processed: ", filepath)
