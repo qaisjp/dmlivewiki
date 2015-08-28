@@ -1,11 +1,9 @@
 package main
 
 import (
-	"crypto/md5"
 	"fmt"
-	"io/ioutil"
+	"github.com/codegangsta/cli"
 	"os"
-	"os/exec"
 	"path"
 )
 
@@ -48,30 +46,10 @@ func getLastPathComponents(filepath string, depth int) (absPath string) {
 	return
 }
 
-func md5Parse(filepath string, name string, depth int) string {
-	data, err := ioutil.ReadFile(path.Join(filepath, name))
-
-	if err != nil {
-		panic(err)
+func checkCommandArgumentNumber(c *cli.Context, n int) bool {
+	if len(c.Args()) != n {
+		cli.ShowCommandHelp(c, c.Command.Name)
+		return false
 	}
-
-	return fmt.Sprintf("%x *%s%s\n", md5.Sum(data), getLastPathComponents(filepath, depth), name)
-}
-
-func ffpParse(filepath string, name string, depth int) string {
-	if path.Ext(name) != ".flac" {
-		return ""
-	}
-
-	data, err := exec.Command(
-		"metaflac",
-		"--show-md5sum",
-		path.Join(filepath, name),
-	).Output()
-
-	if err != nil {
-		panic(err)
-	}
-
-	return fmt.Sprintf("%s%s:%s", getLastPathComponents(filepath, depth), name, data)
+	return true
 }

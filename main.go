@@ -36,6 +36,17 @@ func main() {
 				},
 			},
 		},
+		{
+			Name:   "generate",
+			Usage:  "generate info.txt file for the passed directory",
+			Action: generateInformation,
+			Flags: []cli.Flag{
+				cli.StringFlag{
+					Name:  "tour",
+					Usage: "required: the tour name for this directory",
+				},
+			},
+		},
 	}
 
 	app.Run(os.Args)
