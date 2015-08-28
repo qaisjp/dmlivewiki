@@ -52,23 +52,27 @@ func getLastPathComponents(filepath string, depth int) (absPath string) {
 	return
 }
 
-func checkFilepathArgument(c *cli.Context) (string, os.FileInfo) {
+func checkFilepathArgument(c *cli.Context) (os.FileInfo, string) {
 	if len(c.Args()) != 1 {
 		cli.ShowSubcommandHelp(c)
-		return "", nil
+		return nil, ""
 	}
 
 	filepath := c.Args()[0]
+	return getFileOfType(filepath, true)
+}
 
-	// Ignore error, it returns false
-	// even if it doesn't exist
+func getFileOfType(filepath string, wantDirectory bool) (os.FileInfo, string) {
 	isDirectory, fileInfo, _ := isDirectory(filepath)
-	if !isDirectory {
-		fmt.Println("Error: target is not a directory")
-		return "", nil
+	if isDirectory != wantDirectory {
+		if wantDirectory {
+			fmt.Println("Error: target is not a directory")
+		} else {
+			fmt.Println("Error: target is not a file")
+		}
+		return nil, ""
 	}
-
-	return path.Clean(filepath), fileInfo
+	return fileInfo, path.Clean(filepath)
 }
 
 func shouldContinue(c *cli.Context) bool {

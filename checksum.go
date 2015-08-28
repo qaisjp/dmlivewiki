@@ -11,8 +11,8 @@ import (
 )
 
 func performChecksum(c *cli.Context) {
-	filepath, fileInfo := checkFilepathArgument(c)
-	if filepath == "" {
+	fileInfo, filepath := checkFilepathArgument(c)
+	if fileInfo == nil {
 		return
 	}
 

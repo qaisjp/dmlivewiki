@@ -49,8 +49,8 @@ type TrackData struct {
 }
 
 func generateInformation(c *cli.Context) {
-	filepath, fileInfo := checkFilepathArgument(c)
-	if filepath == "" {
+	fileInfo, filepath := checkFilepathArgument(c)
+	if fileInfo == nil {
 		return
 	}
 
