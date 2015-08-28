@@ -11,21 +11,10 @@ import (
 )
 
 func performChecksum(c *cli.Context) {
-	if !checkCommandArgumentNumber(c, 1) {
+	filepath, fileInfo := checkFilepathArgument(c)
+	if filepath == "" {
 		return
 	}
-
-	filepath := c.Args()[0]
-
-	// Ignore error, it returns false
-	// even if it doesn't exist
-	isDirectory, fileInfo, _ := isDirectory(filepath)
-	if !isDirectory {
-		fmt.Println("Error: target is not a directory")
-		return
-	}
-
-	filepath = path.Clean(filepath)
 
 	if !shouldContinue(c, filepath) {
 		return

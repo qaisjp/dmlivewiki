@@ -46,10 +46,21 @@ func getLastPathComponents(filepath string, depth int) (absPath string) {
 	return
 }
 
-func checkCommandArgumentNumber(c *cli.Context, n int) bool {
-	if len(c.Args()) != n {
+func checkFilepathArgument(c *cli.Context) (string, os.FileInfo) {
+	if len(c.Args()) != 1 {
 		cli.ShowCommandHelp(c, c.Command.Name)
-		return false
+		return "", nil
 	}
-	return true
+
+	filepath := c.Args()[0]
+
+	// Ignore error, it returns false
+	// even if it doesn't exist
+	isDirectory, fileInfo, _ := isDirectory(filepath)
+	if !isDirectory {
+		fmt.Println("Error: target is not a directory")
+		return "", nil
+	}
+
+	return path.Clean(filepath), fileInfo
 }

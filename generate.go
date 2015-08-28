@@ -6,9 +6,16 @@ import (
 )
 
 func generateInformation(c *cli.Context) {
-	if !checkCommandArgumentNumber(c, 1) {
+	filepath, _ := checkFilepathArgument(c)
+	if filepath == "" {
 		return
 	}
+
+	if !shouldContinue(c, filepath) {
+		return
+	}
+
+	// tour := c.Args()[0]
 
 	fmt.Println("Trying to generate with")
 }
