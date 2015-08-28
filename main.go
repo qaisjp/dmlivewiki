@@ -22,6 +22,10 @@ func main() {
 			Name:  "delete",
 			Usage: "instead of creating files, delete files",
 		},
+		cli.BoolFlag{
+			Name:  "single, s",
+			Usage: "parse the directory given, not the subdirectories",
+		},
 	}
 
 	app.Commands = []cli.Command{
@@ -29,12 +33,6 @@ func main() {
 			Name:   "checksum",
 			Usage:  "perform a checksum of directories",
 			Action: performChecksum,
-			Flags: []cli.Flag{
-				cli.BoolFlag{
-					Name:  "single, s",
-					Usage: "parse the directory given, not the subdirectories",
-				},
-			},
 		},
 		{
 			Name:   "generate",

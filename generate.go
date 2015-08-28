@@ -53,7 +53,7 @@ func generateInformation(c *cli.Context) {
 		return
 	}
 
-	filepath, pathInfo := checkFilepathArgument(c)
+	filepath, fileInfo := checkFilepathArgument(c)
 	if filepath == "" {
 		return
 	}
@@ -64,14 +64,36 @@ func generateInformation(c *cli.Context) {
 		return
 	}
 
+	mode := "batch"
+	if c.GlobalBool("single") {
+		mode = "single"
+	}
+
 	fmt.Println("The current tour is:", tour)
-	fmt.Println("The following filepath will be processed:", filepath)
+	fmt.Printf("The following filepath (%s mode) will be processed: %s\n", mode, filepath)
 
 	if !shouldContinue(c) {
 		return
 	}
 
-	infoFile := createFile(path.Join(filepath, pathInfo.Name()+".txt"))
+	if mode == "single" {
+		generateFile(filepath, fileInfo.Name(), tour, c.GlobalBool("delete"))
+		return
+	}
+
+	files, _ := ioutil.ReadDir(filepath)
+	for _, file := range files {
+		if file.IsDir() {
+			name := file.Name()
+			generateFile(path.Join(filepath, name), name, tour, c.GlobalBool("delete"))
+		}
+	}
+
+	///////////////////////////////////////////////////////////////////////
+}
+
+func generateFile(filepath string, name string, tour string, deleteMode bool) {
+	infoFile := createFile(path.Join(filepath, name+".txt"))
 	defer infoFile.Close()
 
 	album := new(AlbumData)

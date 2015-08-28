@@ -17,7 +17,7 @@ func performChecksum(c *cli.Context) {
 	}
 
 	mode := "batch"
-	if c.Bool("single") {
+	if c.GlobalBool("single") {
 		mode = "single"
 	}
 
@@ -27,8 +27,8 @@ func performChecksum(c *cli.Context) {
 		return
 	}
 
-	if c.Bool("single") {
-		processPath(path.Dir(filepath), fileInfo.Name(), c.GlobalBool("delete"))
+	if mode == "single" {
+		processPath(filepath, fileInfo.Name(), c.GlobalBool("delete"))
 		return
 	}
 
@@ -40,8 +40,7 @@ func performChecksum(c *cli.Context) {
 	}
 }
 
-func processPath(filepath string, name string, deleteMode bool) {
-	directory := path.Join(filepath, name)
+func processPath(directory string, name string, deleteMode bool) {
 	filename := path.Join(directory, name+".")
 
 	if deleteMode {
