@@ -3,9 +3,15 @@ package main
 import (
 	"fmt"
 	"github.com/codegangsta/cli"
+	"net/url"
 	"os"
 	"path"
+	"strings"
 )
+
+func wikiescape(s string) string {
+	return url.QueryEscape(strings.Replace(s, " ", "_", -1))
+}
 
 func createFile(filename string) *os.File {
 	fmt.Println("Creating", filename+"...")
@@ -48,7 +54,7 @@ func getLastPathComponents(filepath string, depth int) (absPath string) {
 
 func checkFilepathArgument(c *cli.Context) (string, os.FileInfo) {
 	if len(c.Args()) != 1 {
-		cli.ShowCommandHelp(c, c.Command.Name)
+		cli.ShowSubcommandHelp(c)
 		return "", nil
 	}
 
@@ -68,14 +74,29 @@ func checkFilepathArgument(c *cli.Context) (string, os.FileInfo) {
 func shouldContinue(c *cli.Context) bool {
 	// Ask to continue or just process?
 	if c.GlobalBool("force") {
+		fmt.Print("\n")
 		return true
+	}
+
+	if c.GlobalBool("delete") {
+		fmt.Print("[Delete mode] ")
 	}
 
 	fmt.Print("Continue? (y/n): ")
 	text := ""
 	fmt.Scanln(&text)
+	fmt.Print("\n")
+
 	if text != "y" {
 		return false
 	}
 	return true
+}
+
+func ifTrimPrefix(s, prefix string) string {
+	if !strings.HasPrefix(s, prefix) {
+		panic(fmt.Sprintf("Expected prefix %s, but line is: ", prefix, s))
+		// TODO: see above error handling
+	}
+	return strings.TrimPrefix(s, prefix)
 }
