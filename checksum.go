@@ -16,7 +16,14 @@ func performChecksum(c *cli.Context) {
 		return
 	}
 
-	if !shouldContinue(c, filepath) {
+	mode := "batch"
+	if c.Bool("single") {
+		mode = "single"
+	}
+
+	fmt.Printf("The following filepath (%s mode) will be processed: %s\n", mode, filepath)
+
+	if !shouldContinue(c) {
 		return
 	}
 
@@ -50,27 +57,6 @@ func processPath(filepath string, name string, deleteMode bool) {
 	md5 := createFile(filename + "md5")
 	processDirectory(directory, 1, md5, "md5")
 	md5.Close()
-}
-
-func shouldContinue(c *cli.Context, filepath string) bool {
-	// Ask to continue or just process?
-	if c.GlobalBool("force") {
-		return true
-	}
-
-	mode := "batch"
-	if c.Bool("single") {
-		mode = "single"
-	}
-
-	fmt.Printf("The following filepath (%s mode) will be processed: %s\n", mode, filepath)
-	fmt.Print("Continue? (y/n): ")
-	text := ""
-	fmt.Scanln(&text)
-	if text != "y" {
-		return false
-	}
-	return true
 }
 
 func processDirectory(filepath string, depth int, out *os.File, mode string) {

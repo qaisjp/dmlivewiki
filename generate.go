@@ -11,7 +11,9 @@ func generateInformation(c *cli.Context) {
 		return
 	}
 
-	if !shouldContinue(c, filepath) {
+	fmt.Printf("The following filepath will be processed: %s\n", filepath)
+
+	if !shouldContinue(c) {
 		return
 	}
 

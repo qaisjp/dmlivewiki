@@ -64,3 +64,18 @@ func checkFilepathArgument(c *cli.Context) (string, os.FileInfo) {
 
 	return path.Clean(filepath), fileInfo
 }
+
+func shouldContinue(c *cli.Context) bool {
+	// Ask to continue or just process?
+	if c.GlobalBool("force") {
+		return true
+	}
+
+	fmt.Print("Continue? (y/n): ")
+	text := ""
+	fmt.Scanln(&text)
+	if text != "y" {
+		return false
+	}
+	return true
+}
