@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/codegangsta/cli"
 	"io/ioutil"
+	"os"
 	"os/exec"
 	"path"
 	"strconv"
@@ -48,11 +49,6 @@ type TrackData struct {
 }
 
 func generateInformation(c *cli.Context) {
-	if c.GlobalBool("delete") {
-		fmt.Println("Delete not implemented for this subcommand (yet)")
-		return
-	}
-
 	filepath, fileInfo := checkFilepathArgument(c)
 	if filepath == "" {
 		return
@@ -93,8 +89,14 @@ func generateInformation(c *cli.Context) {
 }
 
 func generateFile(filepath string, name string, tour string, deleteMode bool) {
-	infoFile := createFile(path.Join(filepath, name+".txt"))
-	defer infoFile.Close()
+	var infoFile *os.File
+	if filename := path.Join(filepath, name+".txt"); deleteMode {
+		removeFile(filename)
+		return
+	} else {
+		infoFile = createFile(filename)
+		defer infoFile.Close()
+	}
 
 	album := new(AlbumData)
 	album.Tour = tour
