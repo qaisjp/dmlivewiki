@@ -36,7 +36,7 @@ func performChecksum(c *cli.Context) {
 	files, _ := ioutil.ReadDir(filepath)
 	for _, file := range files {
 		if file.IsDir() {
-			processPath(filepath, file.Name(), c.GlobalBool("delete"))
+			processPath(path.Join(filepath, file.Name()), file.Name(), c.GlobalBool("delete"))
 		}
 	}
 }
