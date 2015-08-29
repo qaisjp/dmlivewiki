@@ -95,6 +95,9 @@ func generateInformation(c *cli.Context) {
 		}
 	}
 
+	// Stupid windows
+	informationTemplate = strings.Replace(informationTemplate, "\n", "\r\n", -1)
+
 	if mode == "single" {
 		generateFile(filepath, fileInfo.Name(), *tour, c.GlobalBool("delete"))
 		return

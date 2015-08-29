@@ -95,7 +95,7 @@ func md5Parse(filepath string, name string, depth int) string {
 		panic(err)
 	}
 
-	return fmt.Sprintf("%x *%s%s\n", md5.Sum(data), getLastPathComponents(filepath, depth), name)
+	return fmt.Sprintf("%x *%s%s\r\n", md5.Sum(data), getLastPathComponents(filepath, depth), name)
 }
 
 func ffpParse(filepath string, name string, depth int) string {
