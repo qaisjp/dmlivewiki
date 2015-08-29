@@ -16,8 +16,9 @@ func performChecksum(c *cli.Context) {
 		return
 	}
 
-	mode := "batch"
-	if c.GlobalBool("single") {
+	singleMode := c.GlobalBool("single")
+	mode := "single"
+	if singleMode {
 		mode = "single"
 	}
 
@@ -28,21 +29,25 @@ func performChecksum(c *cli.Context) {
 		return
 	}
 
-	if mode == "single" {
-		processPath(filepath, fileInfo.Name(), c.GlobalBool("delete"))
-		return
-	}
+	processPath(filepath, fileInfo.Name(), c.GlobalBool("delete"), singleMode)
 
-	files, _ := ioutil.ReadDir(filepath)
-	for _, file := range files {
-		if file.IsDir() {
-			processPath(path.Join(filepath, file.Name()), file.Name(), c.GlobalBool("delete"))
+	if !singleMode {
+		files, _ := ioutil.ReadDir(filepath)
+		for _, file := range files {
+			if file.IsDir() {
+				processPath(path.Join(filepath, file.Name()), file.Name(), c.GlobalBool("delete"), true)
+			}
 		}
 	}
 }
 
-func processPath(directory string, name string, deleteMode bool) {
+func processPath(directory string, name string, deleteMode bool, singleMode bool) {
 	filename := path.Join(directory, name+".")
+
+	depth := 0
+	if singleMode {
+		depth = 1
+	}
 
 	if deleteMode {
 		removeFile(filename + "ffp")
@@ -51,11 +56,11 @@ func processPath(directory string, name string, deleteMode bool) {
 	}
 
 	ffp := createFile(filename + "ffp")
-	processDirectory(directory, 1, ffp, "ffp")
+	processDirectory(directory, depth, ffp, "ffp")
 	ffp.Close()
 
 	md5 := createFile(filename + "md5")
-	processDirectory(directory, 1, md5, "md5")
+	processDirectory(directory, depth, md5, "md5")
 	md5.Close()
 }
 
@@ -78,7 +83,7 @@ func processDirectory(filepath string, depth int, out *os.File, mode string) {
 	for _, file := range files {
 		name := file.Name()
 
-		if file.IsDir() {
+		if file.IsDir() && depth != 0 {
 			processDirectory(path.Join(filepath, name), depth+1, out, mode)
 		} else if (path.Ext(name) != ".md5") && !file.IsDir() {
 			if result := parser(filepath, name, depth); result != "" {
