@@ -11,7 +11,7 @@ func main() {
 	app.Usage = "dmlivewiki helper"
 	app.Author = `Qais "qaisjp" Patankar`
 	app.Email = "me@qaisjp.com"
-	app.Version = "1.0.3"
+	app.Version = "1.0.4"
 
 	app.Flags = []cli.Flag{
 		cli.BoolFlag{
