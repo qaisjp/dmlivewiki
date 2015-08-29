@@ -59,16 +59,16 @@ func checkFilepathArgument(c *cli.Context) (os.FileInfo, string) {
 	}
 
 	filepath := c.Args()[0]
-	return getFileOfType(filepath, true)
+	return getFileOfType(filepath, true, "target")
 }
 
-func getFileOfType(filepath string, wantDirectory bool) (os.FileInfo, string) {
+func getFileOfType(filepath string, wantDirectory bool, target string) (os.FileInfo, string) {
 	isDirectory, fileInfo, _ := isDirectory(filepath)
-	if isDirectory != wantDirectory {
+	if (fileInfo == nil) || (isDirectory != wantDirectory) {
 		if wantDirectory {
-			fmt.Println("Error: target is not a directory")
+			fmt.Println("Error:", target, "is not a directory")
 		} else {
-			fmt.Println("Error: target is not a file")
+			fmt.Println("Error:", target, "is not a file")
 		}
 		return nil, ""
 	}
@@ -82,10 +82,6 @@ func shouldContinue(c *cli.Context) bool {
 		return true
 	}
 
-	if c.GlobalBool("delete") {
-		fmt.Print("[Delete mode] ")
-	}
-
 	fmt.Print("Continue? (y/n): ")
 	text := ""
 	fmt.Scanln(&text)
@@ -95,6 +91,12 @@ func shouldContinue(c *cli.Context) bool {
 		return false
 	}
 	return true
+}
+
+func notifyDeleteMode(c *cli.Context) {
+	if c.GlobalBool("delete") {
+		fmt.Print("You are running in **DELETE MODE** - data will be permanently lost")
+	}
 }
 
 func ifTrimPrefix(s, prefix string) string {

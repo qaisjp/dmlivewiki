@@ -22,6 +22,7 @@ func performChecksum(c *cli.Context) {
 	}
 
 	fmt.Printf("The following filepath (%s mode) will be processed: %s\n", mode, filepath)
+	notifyDeleteMode(c)
 
 	if !shouldContinue(c) {
 		return

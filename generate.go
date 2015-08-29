@@ -27,7 +27,7 @@ https://www.depechemode-live.com/wiki/{{wikiescape .Date}}_{{wikiescape .Album}}
 
 Track list:
 
-{{range .Tracks}}{{printf "%02d" .Index}}. [{{.Duration}}] {{.Title}}
+{{range .Tracks}}{{printf "%02d" .Index}}. [{{.Duration}}] {{.Title}}{{if .HasAlternateLeadVocalist}} (*){{end}}
 {{end}}Total time: {{.Duration}}
 
 Torrent downloaded from https://www.depechemode-live.com
@@ -43,9 +43,10 @@ type AlbumData struct {
 }
 
 type TrackData struct {
-	Index    int
-	Title    string
-	Duration string
+	Index                    int
+	Title                    string
+	Duration                 string
+	HasAlternateLeadVocalist bool
 }
 
 func generateInformation(c *cli.Context) {
@@ -54,8 +55,8 @@ func generateInformation(c *cli.Context) {
 		return
 	}
 
-	tour := c.String("tour")
-	if tour == "" {
+	tourName := c.String("tour")
+	if tourName == "" {
 		cli.ShowSubcommandHelp(c)
 		return
 	}
@@ -65,15 +66,37 @@ func generateInformation(c *cli.Context) {
 		mode = "single"
 	}
 
-	fmt.Println("The current tour is:", tour)
+	tourfile := c.String("tour-file")
+	if tourfile != "" {
+		fileInfo, tourfile = getFileOfType(tourfile, false, "tour-file")
+		if fileInfo == nil {
+			return
+		}
+
+		fmt.Println("Processing tours from:", tourfile)
+	}
+
+	fmt.Println("The current tour is:", tourName)
 	fmt.Printf("The following filepath (%s mode) will be processed: %s\n", mode, filepath)
+	notifyDeleteMode(c)
 
 	if !shouldContinue(c) {
 		return
 	}
 
+	tour := new(Tour)
+	tour.Name = tourName
+	if tourfile != "" { // tourFile is only for reading "alternate vocalists" into tracks map
+		if err := getTourFromTourFile(tourfile, tour); err != nil {
+			fmt.Println("[Error]", err)
+			if !shouldContinue(c) {
+				return
+			}
+		}
+	}
+
 	if mode == "single" {
-		generateFile(filepath, fileInfo.Name(), tour, c.GlobalBool("delete"))
+		generateFile(filepath, fileInfo.Name(), *tour, c.GlobalBool("delete"))
 		return
 	}
 
@@ -81,14 +104,12 @@ func generateInformation(c *cli.Context) {
 	for _, file := range files {
 		if file.IsDir() {
 			name := file.Name()
-			generateFile(path.Join(filepath, name), name, tour, c.GlobalBool("delete"))
+			generateFile(path.Join(filepath, name), name, *tour, c.GlobalBool("delete"))
 		}
 	}
-
-	///////////////////////////////////////////////////////////////////////
 }
 
-func generateFile(filepath string, name string, tour string, deleteMode bool) {
+func generateFile(filepath string, name string, tour Tour, deleteMode bool) {
 	var infoFile *os.File
 	if filename := path.Join(filepath, name+".txt"); deleteMode {
 		removeFile(filename)
@@ -99,14 +120,19 @@ func generateFile(filepath string, name string, tour string, deleteMode bool) {
 	}
 
 	album := new(AlbumData)
-	album.Tour = tour
+	album.Tour = tour.Name
 
 	var duration int64 = 0 // duration incrementer for the album
 
 	files, _ := ioutil.ReadDir(filepath)
 	for _, file := range files {
 		if name := file.Name(); (path.Ext(name) == ".flac") && !file.IsDir() {
-			getTagsFromFile(path.Join(filepath, name), album, &duration)
+			index := getTagsFromFile(path.Join(filepath, name), album, &duration)
+
+			if tour.Tracks != nil {
+				_, containsAlternateLeadVocalist := tour.Tracks[album.Tracks[index].Title]
+				album.Tracks[index].HasAlternateLeadVocalist = containsAlternateLeadVocalist
+			}
 		}
 	}
 
@@ -124,7 +150,7 @@ func generateFile(filepath string, name string, tour string, deleteMode bool) {
 	}
 }
 
-func getTagsFromFile(filepath string, album *AlbumData, albumDuration *int64) {
+func getTagsFromFile(filepath string, album *AlbumData, albumDuration *int64) int {
 	args := []string{
 		"--show-total-samples",
 		"--show-sample-rate",
@@ -207,4 +233,5 @@ func getTagsFromFile(filepath string, album *AlbumData, albumDuration *int64) {
 
 	// Finally, add the new track to the album
 	album.Tracks = append(album.Tracks, track)
+	return len(album.Tracks) - 1
 }

@@ -43,6 +43,10 @@ func main() {
 					Name:  "tour",
 					Usage: "required: the tour name for this directory",
 				},
+				cli.StringFlag{
+					Name:  "tour-file",
+					Usage: "file with list of tracks with alternate vocals",
+				},
 			},
 		},
 	}
