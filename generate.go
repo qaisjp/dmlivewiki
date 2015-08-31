@@ -26,7 +26,7 @@ https://www.depechemode-live.com/wiki/{{wikiescape .Date}}_{{wikiescape .Album}}
 
 Track list:
 
-{{range .Tracks}}{{.Prefix}} [{{.Duration}}] {{.Title}}{{if .HasAlternateLeadVocalist}} (*){{end}}
+{{range .Tracks}}{{.Prefix}}{{printf "%02d" .Index}} [{{.Duration}}] {{.Title}}{{if .HasAlternateLeadVocalist}} (*){{end}}
 {{end}}Total time: {{.Duration}}
 
 Torrent downloaded from https://www.depechemode-live.com
@@ -46,6 +46,7 @@ type TrackData struct {
 	Duration                 string
 	HasAlternateLeadVocalist bool
 	Prefix                   string
+	Index                    int
 }
 
 func generateInformation(c *cli.Context) {
@@ -191,11 +192,9 @@ func generateFile(filepath string, name string, tour Tour, deleteMode bool) {
 			track.HasAlternateLeadVocalist = containsAlternateLeadVocalist
 		}
 
-		prefix := fmt.Sprintf("%02d.", len(album.Tracks)+1)
 		if usesCDNames > 0 {
-			prefix = strings.TrimPrefix(path.Dir(file), "CD") + "." + prefix
+			track.Prefix = strings.TrimPrefix(path.Dir(file), "CD") + "."
 		}
-		track.Prefix = prefix
 
 		// Finally, add the new track to the album
 		album.Tracks = append(album.Tracks, track)
@@ -238,6 +237,7 @@ func getTagsFromFile(filepath string, album *AlbumData, albumDuration *int64) Tr
 			"ARTIST",
 			"DATE",
 			"ALBUM",
+			"tracknumber",
 		)
 	}
 
@@ -296,6 +296,13 @@ func getTagsFromFile(filepath string, album *AlbumData, albumDuration *int64) Tr
 				album.Date = tagValue
 			case "ALBUM":
 				album.Album = ifTrimPrefix(tagValue, album.Date+" ")
+			case "tracknumber":
+				num, err := strconv.Atoi(tagValue)
+				if err != nil {
+					panic(err)
+				}
+
+				track.Index = num
 			}
 		}
 	}
