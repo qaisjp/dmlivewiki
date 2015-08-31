@@ -101,7 +101,7 @@ func notifyDeleteMode(c *cli.Context) {
 
 func ifTrimPrefix(s, prefix string) string {
 	if !strings.HasPrefix(s, prefix) {
-		panic(fmt.Sprintf("Expected prefix %s, but line is: ", prefix, s))
+		panic(fmt.Sprintf("Expected prefix %s, but line is: %s", prefix, s))
 		// TODO: see above error handling
 	}
 	return strings.TrimPrefix(s, prefix)
