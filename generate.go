@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"github.com/codegangsta/cli"
 	"io/ioutil"
-	"os"
 	"os/exec"
 	"path"
 	"strconv"
@@ -27,7 +26,7 @@ https://www.depechemode-live.com/wiki/{{wikiescape .Date}}_{{wikiescape .Album}}
 
 Track list:
 
-{{range .Tracks}}{{printf "%02d" .Index}}. [{{.Duration}}] {{.Title}}{{if .HasAlternateLeadVocalist}} (*){{end}}
+{{range .Tracks}}{{.Prefix}} [{{.Duration}}] {{.Title}}{{if .HasAlternateLeadVocalist}} (*){{end}}
 {{end}}Total time: {{.Duration}}
 
 Torrent downloaded from https://www.depechemode-live.com
@@ -43,10 +42,10 @@ type AlbumData struct {
 }
 
 type TrackData struct {
-	Index                    int
 	Title                    string
 	Duration                 string
 	HasAlternateLeadVocalist bool
+	Prefix                   string
 }
 
 func generateInformation(c *cli.Context) {
@@ -113,13 +112,10 @@ func generateInformation(c *cli.Context) {
 }
 
 func generateFile(filepath string, name string, tour Tour, deleteMode bool) {
-	var infoFile *os.File
-	if filename := path.Join(filepath, name+".txt"); deleteMode {
-		removeFile(filename)
+	outputFilename := path.Join(filepath, name+".txt")
+	if deleteMode {
+		removeFile(outputFilename)
 		return
-	} else {
-		infoFile = createFile(filename)
-		defer infoFile.Close()
 	}
 
 	album := new(AlbumData)
@@ -127,16 +123,87 @@ func generateFile(filepath string, name string, tour Tour, deleteMode bool) {
 
 	var duration int64 = 0 // duration incrementer for the album
 
-	files, _ := ioutil.ReadDir(filepath)
-	for _, file := range files {
-		if name := file.Name(); (path.Ext(name) == ".flac") && !file.IsDir() {
-			index := getTagsFromFile(path.Join(filepath, name), album, &duration)
+	usesCDNames := 0
+	folders := make([]string, 0)
+	files := make([]string, 0)
+	directoryContents, _ := ioutil.ReadDir(filepath)
+	for _, fileinfo := range directoryContents {
+		filename := fileinfo.Name()
+		isDir := fileinfo.IsDir()
+		if isDir {
+			folders = append(folders, filename)
+			if strings.HasPrefix(filename, "CD") {
+				usesCDNames += 1
+			}
+		} else if (path.Ext(filename) == ".flac") && !isDir {
+			files = append(files, filename)
+		}
+	}
 
-			if tour.Tracks != nil {
-				_, containsAlternateLeadVocalist := tour.Tracks[album.Tracks[index].Title]
-				album.Tracks[index].HasAlternateLeadVocalist = containsAlternateLeadVocalist
+	iterating := files
+	if usesCDNames > 0 {
+
+		if len(files) > 0 {
+			// Contains extra files not in a specific CD
+			// Do something!
+		}
+
+		// TODO: should we check subfolders inside
+		// "CD1"?
+
+		files := make([]string, 0)
+		subfolders := make([]string, 0)
+		for _, dirName := range folders {
+			subdirectory, _ := ioutil.ReadDir(path.Join(filepath, dirName))
+			for _, fileinfo := range subdirectory {
+				subdirPath := path.Join(dirName, fileinfo.Name())
+				if fileinfo.IsDir() {
+					subfolders = append(subfolders, subdirPath)
+				} else {
+					files = append(files, subdirPath)
+				}
 			}
 		}
+
+		if len(subfolders) > 0 {
+			fmt.Printf("Skipping! Filepath has depth=3 folders (%s)\n", filepath)
+			return
+		}
+
+		iterating = files // set it to the new files
+
+	}
+
+	if len(folders) > usesCDNames {
+		// Contains extra folders, do something!
+		// There's probably a folder like "Bonus"
+	}
+
+	for _, file := range iterating {
+		// if usesCDNames > 0 {
+		// 	continue
+		// }
+
+		track := getTagsFromFile(path.Join(filepath, file), album, &duration)
+
+		if tour.Tracks != nil {
+			_, containsAlternateLeadVocalist := tour.Tracks[track.Title]
+			track.HasAlternateLeadVocalist = containsAlternateLeadVocalist
+		}
+
+		prefix := fmt.Sprintf("%02d.", len(album.Tracks)+1)
+		if usesCDNames > 0 {
+			prefix = strings.TrimPrefix(path.Dir(file), "CD") + "." + prefix
+		}
+		track.Prefix = prefix
+
+		// Finally, add the new track to the album
+		album.Tracks = append(album.Tracks, track)
+	}
+
+	if len(album.Tracks) == 0 {
+		fmt.Println("Could not create album - aborting creation of", outputFilename)
+		return
 	}
 
 	format := "4:05" // minute:0second
@@ -147,13 +214,16 @@ func generateFile(filepath string, name string, tour Tour, deleteMode bool) {
 
 	funcMap := template.FuncMap{"wikiescape": wikiescape}
 	t := template.Must(template.New("generate").Funcs(funcMap).Parse(informationTemplate))
+
+	infoFile := createFile(outputFilename)
+	defer infoFile.Close()
 	err := t.Execute(infoFile, album)
 	if err != nil {
 		panic(err)
 	}
 }
 
-func getTagsFromFile(filepath string, album *AlbumData, albumDuration *int64) int {
+func getTagsFromFile(filepath string, album *AlbumData, albumDuration *int64) TrackData {
 	args := []string{
 		"--show-total-samples",
 		"--show-sample-rate",
@@ -186,7 +256,6 @@ func getTagsFromFile(filepath string, album *AlbumData, albumDuration *int64) in
 	}
 
 	var track TrackData
-	track.Index = len(album.Tracks) + 1
 
 	lines := strings.Split(string(data), "\r\n")
 	if len(lines) != len(args) {
@@ -234,7 +303,5 @@ func getTagsFromFile(filepath string, album *AlbumData, albumDuration *int64) in
 	*albumDuration += duration
 	track.Duration = time.Unix(duration, 0).Format("4:05")
 
-	// Finally, add the new track to the album
-	album.Tracks = append(album.Tracks, track)
-	return len(album.Tracks) - 1
+	return track
 }
