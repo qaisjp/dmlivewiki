@@ -222,6 +222,7 @@ func generateFile(filepath string, name string, tour Tour, deleteMode bool) {
 	}
 }
 
+// tags: http://age.hobba.nl/audio/tag_frame_reference.html
 func getTagsFromFile(filepath string, album *AlbumData, albumDuration *int64) TrackData {
 	args := []string{
 		"--show-total-samples",
