@@ -230,7 +230,7 @@ func getTagsFromFile(filepath string, album *AlbumData, albumDuration *int64) Tr
 	}
 
 	nonTagArgs := len(args)
-	tags := []string{"TITLE"}
+	tags := []string{"TITLE", "tracknumber"}
 
 	getAlbumData := album.Artist == ""
 	if getAlbumData {
@@ -238,7 +238,6 @@ func getTagsFromFile(filepath string, album *AlbumData, albumDuration *int64) Tr
 			"ARTIST",
 			"DATE",
 			"ALBUM",
-			"tracknumber",
 		)
 	}
 
@@ -291,12 +290,6 @@ func getTagsFromFile(filepath string, album *AlbumData, albumDuration *int64) Tr
 			switch tagName {
 			case "TITLE":
 				track.Title = tagValue
-			case "ARTIST":
-				album.Artist = tagValue
-			case "DATE":
-				album.Date = tagValue
-			case "ALBUM":
-				album.Album = ifTrimPrefix(tagValue, album.Date+" ")
 			case "tracknumber":
 				num, err := strconv.Atoi(tagValue)
 				if err != nil {
@@ -304,6 +297,12 @@ func getTagsFromFile(filepath string, album *AlbumData, albumDuration *int64) Tr
 				}
 
 				track.Index = num
+			case "ARTIST":
+				album.Artist = tagValue
+			case "DATE":
+				album.Date = tagValue
+			case "ALBUM":
+				album.Album = ifTrimPrefix(tagValue, album.Date+" ")
 			}
 		}
 	}
