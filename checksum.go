@@ -17,7 +17,7 @@ func performChecksum(c *cli.Context) {
 	}
 
 	singleMode := c.GlobalBool("single")
-	mode := "single"
+	mode := "batch"
 	if singleMode {
 		mode = "single"
 	}
