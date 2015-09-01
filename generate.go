@@ -124,17 +124,21 @@ func generateFile(filepath string, name string, tour Tour, deleteMode bool) {
 
 	var duration int64 = 0 // duration incrementer for the album
 
-	usesCDNames := 0
+	useCDNames := false
 	folders := make([]string, 0)
+	extraFolders := make([]string, 0)
 	files := make([]string, 0)
+
 	directoryContents, _ := ioutil.ReadDir(filepath)
 	for _, fileinfo := range directoryContents {
 		filename := fileinfo.Name()
 		isDir := fileinfo.IsDir()
 		if isDir {
-			folders = append(folders, filename)
 			if strings.HasPrefix(filename, "CD") {
-				usesCDNames += 1
+				folders = append(folders, filename)
+				useCDNames = true
+			} else {
+				extraFolders = append(extraFolders, filename)
 			}
 		} else if (path.Ext(filename) == ".flac") && !isDir {
 			files = append(files, filename)
@@ -142,15 +146,13 @@ func generateFile(filepath string, name string, tour Tour, deleteMode bool) {
 	}
 
 	iterating := files
-	if usesCDNames > 0 {
+	if useCDNames {
 
 		if len(files) > 0 {
 			// Contains extra files not in a specific CD
 			// Do something!
+			fmt.Println("Warning! Files outside CD folders in", filepath)
 		}
-
-		// TODO: should we check subfolders inside
-		// "CD1"?
 
 		files := make([]string, 0)
 		subfolders := make([]string, 0)
@@ -172,19 +174,16 @@ func generateFile(filepath string, name string, tour Tour, deleteMode bool) {
 		}
 
 		iterating = files // set it to the new files
-
+		// this means old files won't be iterated
 	}
 
-	if len(folders) > usesCDNames {
+	if len(extraFolders) > 0 {
 		// Contains extra folders, do something!
 		// There's probably a folder like "Bonus"
+		fmt.Println("Warning! Extra non CD folders inside", filepath)
 	}
 
 	for _, file := range iterating {
-		// if usesCDNames > 0 {
-		// 	continue
-		// }
-
 		track := getTagsFromFile(path.Join(filepath, file), album, &duration)
 
 		if tour.Tracks != nil {
@@ -192,7 +191,7 @@ func generateFile(filepath string, name string, tour Tour, deleteMode bool) {
 			track.HasAlternateLeadVocalist = containsAlternateLeadVocalist
 		}
 
-		if usesCDNames > 0 {
+		if useCDNames {
 			track.Prefix = strings.TrimPrefix(path.Dir(file), "CD") + "."
 		}
 
