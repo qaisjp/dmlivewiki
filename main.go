@@ -53,3 +53,52 @@ func main() {
 
 	app.Run(os.Args)
 }
+
+var informationTemplate = `{{.Artist}}
+{{.Date}}
+{{.Album}}
+{{.Tour}}
+
+Lineage: 
+
+Notes: 
+
+This source is considered Source 1 for this date:
+https://www.depechemode-live.com/wiki/{{wikiescape .Date}}_{{wikiescape .Album}}/Source_1
+
+Track list:
+
+{{range .Tracks}}{{.Prefix}}{{printf "%02d" .Index}} [{{.Duration}}] {{.Title}}{{if .HasAlternateLeadVocalist}} (*){{end}}
+{{end}}Total time: {{.Duration}}
+
+Torrent downloaded from https://www.depechemode-live.com
+`
+
+var wikiTemplate = `== Notes ==
+
+{{.Notes}}
+
+== Listen ==
+
+You can listen to this entire recording below.
+
+<html5media>https://media.depechemode-live.com/stream/{{.FolderName}}/complete.m4a</html5media>
+
+== Track list ==
+
+{{range .Tracks}}#[{{.Duration}}] <sm2>https://media.depechemode-live.com/stream/{{/FolderName}}/{{printf "%02d" .Index}}.m4a</sm2> {{.Name}}
+{{end}}*Total time: {{.Duration}}
+
+== Lineage ==
+
+{{.Lineage}}
+
+== Download ==
+
+*[https://depechemode-live.com/torrents/{{.FolderName}}.torrent Download via torrent] - FLAC 16-bit 44.1khz - {{.Size}}
+
+[[Category:Audience recordings]]
+[[Category:Source]]
+[[Category:Streamable]]
+[[Category:First generation recordings]]
+`

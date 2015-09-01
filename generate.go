@@ -12,26 +12,6 @@ import (
 	"time"
 )
 
-var informationTemplate = `{{.Artist}}
-{{.Date}}
-{{.Album}}
-{{.Tour}}
-
-Lineage: 
-
-Notes: 
-
-This source is considered Source 1 for this date:
-https://www.depechemode-live.com/wiki/{{wikiescape .Date}}_{{wikiescape .Album}}/Source_1
-
-Track list:
-
-{{range .Tracks}}{{.Prefix}}{{printf "%02d" .Index}} [{{.Duration}}] {{.Title}}{{if .HasAlternateLeadVocalist}} (*){{end}}
-{{end}}Total time: {{.Duration}}
-
-Torrent downloaded from https://www.depechemode-live.com
-`
-
 type AlbumData struct {
 	Artist   string
 	Date     string
