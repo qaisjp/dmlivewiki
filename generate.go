@@ -68,11 +68,11 @@ func generateInformation(c *cli.Context) {
 
 	tourfile := c.String("tour-file")
 	if tourfile != "" {
-		fileInfo, tourfile = getFileOfType(tourfile, false, "tour-file")
+		fileInfo, tourfileClean := getFileOfType(tourfile, false, "tour-file")
 		if fileInfo == nil {
 			return
 		}
-
+		tourfile = tourfileClean
 		fmt.Println("Processing tours from:", tourfile)
 	}
 
