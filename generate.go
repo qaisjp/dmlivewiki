@@ -97,7 +97,7 @@ func getTagsFromFile(filepath string, album *AlbumData, albumDuration *int64) Tr
 
 	var track TrackData
 
-	lines := strings.Split(string(data), "\r\n")
+	lines := strings.Split(string(data), "\n")
 	if len(lines) != len(args) {
 		panic(fmt.Sprintf("[invalid metaflac output] Expected %d lines, got %d", len(args), len(lines)-1))
 		// todo, return a bool to delete this file
