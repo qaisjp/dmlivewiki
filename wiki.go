@@ -7,8 +7,10 @@ import (
 	"github.com/inhies/go-bytesize" // Do we really need this?
 	"io/ioutil"
 	"os"
+	"path"
 	fpath "path/filepath"
 	"regexp"
+	// "strconv"
 	"strings"
 	"text/template"
 )
@@ -119,7 +121,6 @@ func generateWikifile(filepath string, foldername string, regex *regexp.Regexp, 
 	}
 	b := bytesize.New(size)
 	parsedData.Size = b.String()
-	fmt.Print("size " + parsedData.Size)
 
 	tracks := make([]WikiTrackData, 0)
 	for i, field := range matches {
@@ -147,11 +148,29 @@ func generateWikifile(filepath string, foldername string, regex *regexp.Regexp, 
 				l := strings.Index(str, "]")
 				trackData.Duration = str[f+1 : l]
 
+				number := str[:f]
+				separator := strings.Index(number, ".")
+				if separator == -1 {
+					trackData.FolderName = foldername
+				} else {
+					// This bit only uses the "path" library
+					// because URL's only use forward slash
+					cdStr := number[:separator]
+
+					// __, err := strconv.Atoi(cdStr)
+					// if err == nil {
+					// 	trackData.FolderName = path.Join(foldername, "CD"+cdStr)
+					// } else {
+					//  trackData.FolderName = path.Join(foldername, cdStr)
+					//}
+					trackData.FolderName = path.Join(foldername, "CD"+cdStr)
+				}
+
 				name := strings.TrimSpace(str[l+1:])
 				nameWithoutSuffix := strings.TrimSuffix(name, " (*)")
 				trackData.HasAlternateLeadVocalist = name != nameWithoutSuffix
 				trackData.Name = nameWithoutSuffix
-				trackData.FolderName = foldername
+
 				tracks = append(tracks, trackData)
 			}
 		case 4:
@@ -171,4 +190,5 @@ func generateWikifile(filepath string, foldername string, regex *regexp.Regexp, 
 	}
 
 	fmt.Println("success!")
+	return
 }
