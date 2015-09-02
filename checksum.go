@@ -55,10 +55,12 @@ func processPath(directory string, name string, deleteMode bool, singleMode bool
 		return
 	}
 
+	fmt.Println("Creating", filename+"ffp...")
 	ffp := createFile(filename + "ffp")
 	processDirectory(directory, depth, ffp, "ffp")
 	ffp.Close()
 
+	fmt.Println("Creating", filename+"md5...")
 	md5 := createFile(filename + "md5")
 	processDirectory(directory, depth, md5, "md5")
 	md5.Close()

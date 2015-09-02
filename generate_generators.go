@@ -174,6 +174,7 @@ func generateFile(filepath string, name string, tour Tour, deleteMode bool) {
 	funcMap := template.FuncMap{"wikiescape": wikiescape}
 	t := template.Must(template.New("generate").Funcs(funcMap).Parse(informationTemplate))
 
+	fmt.Println("Creating", outputFilename+"...")
 	infoFile := createFile(outputFilename)
 	defer infoFile.Close()
 	err := t.Execute(infoFile, album)

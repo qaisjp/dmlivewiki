@@ -14,7 +14,6 @@ func wikiescape(s string) string {
 }
 
 func createFile(filename string) *os.File {
-	fmt.Println("Creating", filename+"...")
 	f, err := os.Create(filename)
 	if err != nil {
 		panic(f)
