@@ -50,8 +50,8 @@ func processPath(directory string, name string, deleteMode bool, singleMode bool
 	}
 
 	if deleteMode {
-		removeFile(filename + "ffp")
-		removeFile(filename + "md5")
+		removeFile(filename+"ffp", true)
+		removeFile(filename+"md5", true)
 		return
 	}
 

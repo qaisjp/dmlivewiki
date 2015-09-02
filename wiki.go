@@ -83,8 +83,8 @@ func generateWikifile(filepath string, foldername string, regex *regexp.Regexp, 
 	infofile := basepath + ".txt"
 	wikifile := basepath + ".wiki"
 
+	removeFile(wikifile, deleteMode)
 	if deleteMode {
-		removeFile(wikifile)
 		return
 	}
 

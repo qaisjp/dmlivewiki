@@ -21,18 +21,24 @@ func createFile(filename string) *os.File {
 	return f
 }
 
-func removeFile(filename string) {
-	fmt.Printf("Removing %s...", filename)
+func removeFile(filename string, log bool) {
+	if log {
+		fmt.Printf("Removing %s...", filename)
+	}
 
 	err := os.Remove(filename)
 	if err != nil {
 		if os.IsNotExist(err) {
-			fmt.Println(" does not exist!")
+			if log {
+				fmt.Println(" does not exist!")
+			}
 			return
 		}
 		panic(err)
 	}
-	fmt.Println(" success!")
+	if log {
+		fmt.Println(" success!")
+	}
 }
 
 func isDirectory(filepath string) (bool, os.FileInfo, error) {

@@ -76,7 +76,7 @@ func generateInformation(c *cli.Context) {
 func generateFile(filepath string, name string, tour Tour, deleteMode bool) {
 	outputFilename := path.Join(filepath, name+".txt")
 	if deleteMode {
-		removeFile(outputFilename)
+		removeFile(outputFilename, true)
 		return
 	}
 
