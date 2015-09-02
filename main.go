@@ -36,7 +36,7 @@ func main() {
 		},
 		{
 			Name:   "generate",
-			Usage:  "generate info.txt file for the passed directory",
+			Usage:  "generate dirname.txt Infofile's for the passed directory",
 			Action: generateInformation,
 			Flags: []cli.Flag{
 				cli.StringFlag{
@@ -48,6 +48,11 @@ func main() {
 					Usage: "file with list of tracks with alternate vocals",
 				},
 			},
+		},
+		{
+			Name:   "wiki",
+			Usage:  "generate dirname.wiki Wikifile's for the passed directory",
+			Action: generateWikifiles,
 		},
 	}
 
@@ -86,7 +91,7 @@ You can listen to this entire recording below.
 
 == Track list ==
 
-{{range .Tracks}}#[{{.Duration}}] <sm2>https://media.depechemode-live.com/stream/{{/FolderName}}/{{printf "%02d" .Index}}.m4a</sm2> {{.Name}}
+{{range .Tracks}}#[{{.Duration}}] <sm2>https://media.depechemode-live.com/stream/{{.FolderName}}/{{printf "%02d" .Index}}.m4a</sm2> [[{{.Name}}]]{{if .HasAlternateLeadVocalist}} (*){{end}}
 {{end}}*Total time: {{.Duration}}
 
 == Lineage ==
@@ -102,3 +107,5 @@ You can listen to this entire recording below.
 [[Category:Streamable]]
 [[Category:First generation recordings]]
 `
+
+var wikiRegex = `(?:.|[\r\n])+[\r\n]+Lineage: ((?:.|[\r\n]+)*)[\r\n]+Notes: ((?:.|[\r\n]+)*)[\r\n]+This source is considered(?:.|[\r\n]+)*Track list:[\r\n]+[\r\n]+((?:.|[\r\n]+)*)[\r\n]+Total time: (.*)`
