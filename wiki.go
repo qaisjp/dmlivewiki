@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"fmt"
 	"github.com/codegangsta/cli"
+	"github.com/inhies/go-bytesize" // Do we really need this?
 	"io/ioutil"
 	"os"
 	fpath "path/filepath"
@@ -110,6 +111,16 @@ func generateWikifile(filepath string, foldername string, regex *regexp.Regexp, 
 	var parsedData WikiAlbumData
 	parsedData.FolderName = foldername
 
+	size, err := getDirectorySize(filepath)
+	if err != nil {
+		fmt.Println("failed to get directory size")
+		fmt.Println(err)
+		return
+	}
+	b := bytesize.New(size)
+	parsedData.Size = b.String()
+	fmt.Print("size " + parsedData.Size)
+
 	tracks := make([]WikiTrackData, 0)
 	for i, field := range matches {
 		if i == 0 {
@@ -147,9 +158,7 @@ func generateWikifile(filepath string, foldername string, regex *regexp.Regexp, 
 			parsedData.Duration = field
 		}
 	}
-
 	parsedData.Tracks = tracks
-	parsedData.Size = "TO DO ME UP"
 
 	wikiout := createFile(wikifile)
 	defer wikiout.Close()
@@ -158,7 +167,7 @@ func generateWikifile(filepath string, foldername string, regex *regexp.Regexp, 
 	if err != nil {
 		fmt.Println("could not insert data into template!")
 		fmt.Println(err)
-		os.Exit(1)
+		return
 	}
 
 	fmt.Println("success!")

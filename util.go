@@ -3,9 +3,11 @@ package main
 import (
 	"fmt"
 	"github.com/codegangsta/cli"
+	"io/ioutil"
 	"net/url"
 	"os"
 	"path"
+	fpath "path/filepath"
 	"strings"
 )
 
@@ -47,6 +49,28 @@ func isDirectory(filepath string) (bool, os.FileInfo, error) {
 		return false, nil, err
 	}
 	return fileInfo.IsDir(), fileInfo, err
+}
+
+func getDirectorySize(filepath string) (float64, error) {
+	var size float64
+	contents, err := ioutil.ReadDir(filepath)
+	if err != nil {
+		return -1, err
+	}
+
+	for _, file := range contents {
+		if file.IsDir() {
+			subsize, err := getDirectorySize(fpath.Join(filepath, file.Name()))
+			if err != nil {
+				return -1, err
+			}
+			size += subsize
+		} else {
+			size += float64(file.Size())
+		}
+	}
+
+	return size, nil
 }
 
 func getLastPathComponents(filepath string, depth int) (absPath string) {
