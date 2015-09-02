@@ -190,5 +190,4 @@ func generateWikifile(filepath string, foldername string, regex *regexp.Regexp, 
 	}
 
 	fmt.Println("success!")
-	return
 }
