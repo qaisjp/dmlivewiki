@@ -7,10 +7,11 @@ import (
 	"github.com/inhies/go-bytesize" // Do we really need this?
 	"io/ioutil"
 	"os"
+	"os/exec"
 	"path"
 	fpath "path/filepath"
 	"regexp"
-	// "strconv"
+	"strconv"
 	"strings"
 	"text/template"
 )
@@ -30,6 +31,8 @@ type WikiAlbumData struct {
 	Duration   string
 	Lineage    string
 	Size       string
+	SampleRate string
+	BPS        string
 }
 
 func generateWikifiles(c *cli.Context) {
@@ -121,6 +124,56 @@ func generateWikifile(filepath string, foldername string, regex *regexp.Regexp, 
 	}
 	b := bytesize.New(size)
 	parsedData.Size = b.String()
+
+	directoryContents, err := ioutil.ReadDir(filepath)
+	if err != nil {
+		fmt.Println("failed to get directory contents")
+		fmt.Println(err)
+		return
+	}
+
+	for _, file := range directoryContents {
+		if file.IsDir() || fpath.Ext(file.Name()) != ".flac" {
+			continue
+		}
+
+		data, err := exec.Command(
+			"metaflac",
+			"--show-sample-rate",
+			"--show-bps", // update numbers below
+			fpath.Join(filepath, file.Name()),
+		).Output()
+
+		if err != nil {
+			fmt.Println("failed to get sample-rate & bps")
+			fmt.Println(err)
+			return
+		}
+
+		lines := strings.Split(string(data), "\n")
+		if len(lines) != 1+2 {
+			// Update '2' below and above
+			fmt.Println("expected 2 metaflac lines, got", len(lines)-1)
+			return
+		}
+
+		for i, line := range lines {
+			line := strings.TrimSpace(line)
+
+			if i == 0 {
+				rateFloat, err := strconv.ParseFloat(line, 32)
+				if err != nil {
+					fmt.Print("could not convert sample-rate to float")
+					fmt.Println(err)
+					return
+				}
+				parsedData.SampleRate = strconv.FormatFloat(rateFloat/1000, 'f', -1, 32) + "KHz"
+			} else if i == 1 {
+				parsedData.BPS = line
+			}
+		}
+		break
+	}
 
 	tracks := make([]WikiTrackData, 0)
 	for i, field := range matches {
