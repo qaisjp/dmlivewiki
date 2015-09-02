@@ -105,7 +105,6 @@ You can listen to this entire recording below.
 [[Category:Audience recordings]]
 [[Category:Source]]
 [[Category:Streamable]]
-[[Category:First generation recordings]]
 `
 
 var wikiRegex = `(?:.|[\r\n])+[\r\n]+Lineage: ((?:.|[\r\n]+)*)[\r\n]+Notes: ((?:.|[\r\n]+)*)[\r\n]+This source is considered(?:.|[\r\n]+)*Track list:[\r\n]+[\r\n]+((?:.|[\r\n]+)*)[\r\n]+Total time: (.*)`
