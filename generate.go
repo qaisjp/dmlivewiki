@@ -81,10 +81,10 @@ func getTagsFromFile(filepath string, album *AlbumData, albumDuration *int64) Tr
 		)
 	}
 
-	args = append(args, filepath)
 	for _, tag := range tags {
 		args = append(args, "--show-tag="+tag)
 	}
+	args = append(args, filepath)
 
 	data, err := exec.Command(
 		"metaflac",
