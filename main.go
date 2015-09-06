@@ -76,8 +76,7 @@ Track list:
 {{range .Tracks}}{{.Prefix}}{{printf "%02d" .Index}}. [{{.Duration}}] {{.Title}}{{if .HasAlternateLeadVocalist}} (*){{end}}
 {{end}}Total time: {{.Duration}}
 
-Torrent downloaded from https://www.depechemode-live.com
-`
+Torrent downloaded from https://www.depechemode-live.com`
 
 var wikiTemplate = `== Notes ==
 
