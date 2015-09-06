@@ -145,9 +145,11 @@ func generateWikifile(filepath string, foldername string, regex *regexp.Regexp, 
 		).Output()
 
 		if err != nil {
-			fmt.Println("failed to get sample-rate & bps")
-			fmt.Println(err)
-			return
+			fmt.Println("metaflac returned an invalid response for sample-rate/bps")
+			if data != nil {
+				fmt.Println(data)
+			}
+			panic(err)
 		}
 
 		lines := strings.Split(string(data), "\n")

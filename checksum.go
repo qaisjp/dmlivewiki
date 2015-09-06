@@ -117,6 +117,10 @@ func ffpParse(filepath string, name string, depth int) string {
 	).Output()
 
 	if err != nil {
+		fmt.Println("metaflac returned an invalid response")
+		if data != nil {
+			fmt.Println(data)
+		}
 		panic(err)
 	}
 
