@@ -73,7 +73,7 @@ https://www.depechemode-live.com/wiki/{{wikiescape .Date}}_{{wikiescape .Album}}
 
 Track list:
 
-{{range .Tracks}}{{.Prefix}}{{printf "%02d" .Index}} [{{.Duration}}] {{.Title}}{{if .HasAlternateLeadVocalist}} (*){{end}}
+{{range .Tracks}}{{.Prefix}}{{printf "%02d" .Index}}. [{{.Duration}}] {{.Title}}{{if .HasAlternateLeadVocalist}} (*){{end}}
 {{end}}Total time: {{.Duration}}
 
 Torrent downloaded from https://www.depechemode-live.com
