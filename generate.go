@@ -70,14 +70,14 @@ func getTagsFromFile(filepath string, album *AlbumData, albumDuration *int64) Tr
 	}
 
 	nonTagArgs := len(args)
-	tags := []string{"TITLE", "tracknumber"}
+	tags := []string{"title", "tracknumber"}
 
 	getAlbumData := album.Artist == ""
 	if getAlbumData {
 		tags = append(tags,
-			"ARTIST",
-			"DATE",
-			"ALBUM",
+			"artist",
+			"date",
+			"album",
 		)
 	}
 
@@ -125,10 +125,15 @@ func getTagsFromFile(filepath string, album *AlbumData, albumDuration *int64) Tr
 		case i < len(args)-1:
 			tagName := tags[i-nonTagArgs]
 			prefix := tagName + "="
-			tagValue := ifTrimPrefix(line, prefix)
+
+			if strings.LastIndex(strings.ToLower(line), prefix) == -1 {
+				panic(fmt.Sprintf("Expected prefix %s, but line is: %s", prefix, strings.ToLower(line)))
+				os.Exit(1)
+			}
+			tagValue := line[len(tagName)+1:]
 
 			switch tagName {
-			case "TITLE":
+			case "title":
 				track.Title = tagValue
 			case "tracknumber":
 				num, err := strconv.Atoi(tagValue)
@@ -137,11 +142,11 @@ func getTagsFromFile(filepath string, album *AlbumData, albumDuration *int64) Tr
 				}
 
 				track.Index = num
-			case "ARTIST":
+			case "artist":
 				album.Artist = tagValue
-			case "DATE":
+			case "date":
 				album.Date = tagValue
-			case "ALBUM":
+			case "album":
 				album.Album = ifTrimPrefix(tagValue, album.Date+" ")
 			}
 		}
