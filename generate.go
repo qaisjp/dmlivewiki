@@ -92,6 +92,10 @@ func getTagsFromFile(filepath string, album *AlbumData, albumDuration *int64) Tr
 	).Output()
 
 	if err != nil {
+		fmt.Println("metaflac returned an invalid response")
+		if data != nil {
+			fmt.Println(data)
+		}
 		panic(err)
 	}
 
