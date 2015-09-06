@@ -167,7 +167,7 @@ func generateFile(filepath string, name string, tour Tour, deleteMode bool) {
 
 	format := "4:05" // minute:0second
 	if duration >= 3600 {
-		format = "3:04:05" // duration is longer than an hour
+		format = "15:04:05" // duration is longer than an hour
 	}
 	album.Duration = time.Unix(duration, 0).Format(format)
 
