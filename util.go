@@ -19,6 +19,11 @@ func wikiescape(s string) string {
 func createFile(filename string) *os.File {
 	f, err := os.Create(filename)
 	if err != nil {
+		if os.IsPermission(err) {
+			fmt.Println("permission error!")
+			return nil
+		}
+
 		panic(err.Error())
 	}
 	return f
@@ -34,6 +39,11 @@ func removeFile(filename string, log bool) {
 		if os.IsNotExist(err) {
 			if log {
 				fmt.Println(" does not exist!")
+			}
+			return
+		} else if os.IsPermission(err) {
+			if log {
+				fmt.Println(" permission error!")
 			}
 			return
 		}

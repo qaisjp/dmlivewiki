@@ -237,12 +237,14 @@ func generateWikifile(filepath string, foldername string, regex *regexp.Regexp, 
 	wikiout := createFile(wikifile)
 	defer wikiout.Close()
 
-	err = wikiTemplate.Execute(wikiout, parsedData)
-	if err != nil {
-		fmt.Println("could not insert data into template!")
-		fmt.Println(err)
-		return
-	}
+	if wikiout != nil {
+		err = wikiTemplate.Execute(wikiout, parsedData)
+		if err != nil {
+			fmt.Println("could not insert data into template!")
+			fmt.Println(err)
+			return
+		}
 
-	fmt.Println("success!")
+		fmt.Println("success!")
+	}
 }

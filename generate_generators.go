@@ -172,8 +172,11 @@ func generateFile(filepath string, name string, tour Tour, deleteMode bool) {
 	fmt.Println("Creating", outputFilename+"...")
 	infoFile := createFile(outputFilename)
 	defer infoFile.Close()
-	err := t.Execute(infoFile, album)
-	if err != nil {
-		panic(err)
+
+	if infoFile != nil {
+		err := t.Execute(infoFile, album)
+		if err != nil {
+			panic(err)
+		}
 	}
 }
