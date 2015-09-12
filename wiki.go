@@ -207,7 +207,7 @@ func generateWikifile(filepath string, foldername string, regex *regexp.Regexp, 
 				l := strings.Index(str, "]")
 				trackData.Duration = str[f+1 : l]
 
-				number := str[:f]
+				number := str[:f-2]
 				separator := strings.Index(number, ".")
 				if separator == -1 {
 					trackData.FolderName = foldername
