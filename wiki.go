@@ -23,6 +23,7 @@ type WikiTrackData struct {
 	HasAlternateLeadVocalist bool
 	Name                     string
 	CD                       int
+	LinePrefix               string
 }
 
 type WikiAlbumData struct {
@@ -206,6 +207,7 @@ func generateWikifile(filepath string, foldername string, regex *regexp.Regexp, 
 			for _, track := range strings.Split(field, "\n") {
 				var trackData WikiTrackData
 				trackData.FolderName = foldername
+				trackData.LinePrefix = "#"
 
 				str := strings.TrimSpace(track)
 				f := strings.Index(str, "[")
@@ -228,6 +230,7 @@ func generateWikifile(filepath string, foldername string, regex *regexp.Regexp, 
 
 					if lastTrack.CD != cdNumber {
 						currentTrackNumber = 0
+						trackData.LinePrefix = fmt.Sprintf("\r\nCD%d:\r\n%s", cdNumber, trackData.LinePrefix)
 					}
 				} else {
 					// Here lies incomplete support for "Bonus." tracks
