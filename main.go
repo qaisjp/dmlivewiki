@@ -90,7 +90,7 @@ You can listen to this entire recording below.
 
 == Track list ==
 
-{{range .Tracks}}#[{{.Duration}}] <sm2>https://media.depechemode-live.com/stream{{if .FolderName}}/{{.FolderName}}{{end}}/{{printf "%02d" .Index}}.m4a</sm2> [[{{.Name}}]]{{if .HasAlternateLeadVocalist}} (*){{end}}
+{{range .Tracks}}#[{{.Duration}}] <sm2>https://media.depechemode-live.com/stream/{{.FolderName}}/{{printf "%02d" .Index}}.m4a</sm2> [[{{.Name}}]]{{if .HasAlternateLeadVocalist}} (*){{end}}
 {{end}}*Total time: {{.Duration}}
 
 == Lineage ==

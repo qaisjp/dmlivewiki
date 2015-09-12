@@ -8,6 +8,7 @@ import (
 	"io/ioutil"
 	"os"
 	"os/exec"
+	upath "path"
 	fpath "path/filepath"
 	"regexp"
 	"strconv"
@@ -200,6 +201,7 @@ func generateWikifile(filepath string, foldername string, regex *regexp.Regexp, 
 			// parse tracks
 			for index, track := range strings.Split(field, "\n") {
 				var trackData WikiTrackData
+				trackData.FolderName = foldername
 
 				str := strings.TrimSpace(track)
 				f := strings.Index(str, "[")
@@ -217,7 +219,7 @@ func generateWikifile(filepath string, foldername string, regex *regexp.Regexp, 
 					if err != nil {
 						panic(err.Error())
 					}
-					trackData.FolderName = "CD" + cdStr
+					trackData.FolderName = upath.Join(foldername, "CD"+cdStr)
 					trackData.CD = cdNumber
 
 					if (index != 0) && (lastTrack.CD != cdNumber) {
