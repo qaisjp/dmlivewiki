@@ -95,7 +95,6 @@ You can listen to this entire recording below.
 == Lineage ==
 
 {{.Lineage}}
-
 == Download ==
 
 *[https://www.depechemode-live.com/torrents/{{.FolderName}}.torrent Download via torrent] - FLAC {{.BPS}}-bit {{.SampleRate}} - {{.Size}}
