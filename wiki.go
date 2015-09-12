@@ -22,6 +22,7 @@ type WikiTrackData struct {
 	Index                    int
 	HasAlternateLeadVocalist bool
 	Name                     string
+	CD                       int
 }
 
 type WikiAlbumData struct {
@@ -178,6 +179,10 @@ func generateWikifile(filepath string, foldername string, regex *regexp.Regexp, 
 	}
 
 	tracks := make([]WikiTrackData, 0)
+
+	var lastTrack WikiTrackData
+	var currentTrackNumber int = 0
+
 	for i, field := range matches {
 		if i == 0 {
 			// The first one is just itself
@@ -196,7 +201,6 @@ func generateWikifile(filepath string, foldername string, regex *regexp.Regexp, 
 			// parse tracks
 			for index, track := range strings.Split(field, "\n") {
 				var trackData WikiTrackData
-				trackData.Index = index + 1
 
 				str := strings.TrimSpace(track)
 				f := strings.Index(str, "[")
@@ -212,12 +216,17 @@ func generateWikifile(filepath string, foldername string, regex *regexp.Regexp, 
 					// because URL's only use forward slash
 					cdStr := number[:separator]
 
-					// __, err := strconv.Atoi(cdStr)
-					// if err == nil {
-					// 	trackData.FolderName = path.Join(foldername, "CD"+cdStr)
-					// } else {
-					//  trackData.FolderName = path.Join(foldername, cdStr)
-					//}
+					cdNumber, err := strconv.Atoi(cdStr)
+					if err == nil {
+						trackData.FolderName = path.Join(foldername, "CD"+cdStr)
+					} else {
+						trackData.FolderName = path.Join(foldername, cdStr)
+						trackData.CD = cdNumber
+
+						if (index != 0) && (lastTrack.CD != cdNumber) {
+							currentTrackNumber = 0
+						}
+					}
 					trackData.FolderName = path.Join(foldername, "CD"+cdStr)
 				}
 
@@ -225,7 +234,9 @@ func generateWikifile(filepath string, foldername string, regex *regexp.Regexp, 
 				nameWithoutSuffix := strings.TrimSuffix(name, " (*)")
 				trackData.HasAlternateLeadVocalist = name != nameWithoutSuffix
 				trackData.Name = nameWithoutSuffix
+				trackData.Index = currentTrackNumber + 1
 
+				lastTrack = trackData
 				tracks = append(tracks, trackData)
 			}
 		case 4:
