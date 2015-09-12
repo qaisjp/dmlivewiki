@@ -93,6 +93,7 @@ func getTagsFromFile(filepath string, album *AlbumData, albumDuration *time.Dura
 
 	if err != nil {
 		fmt.Println("metaflac returned an invalid response")
+		fmt.Println("[DEBUG] len(album.Tracks) == ", len(album.Tracks))
 		if data != nil {
 			fmt.Println(data)
 		}

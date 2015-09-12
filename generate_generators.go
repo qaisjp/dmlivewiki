@@ -121,7 +121,7 @@ func generateFile(filepath string, name string, tour Tour, deleteMode bool) {
 				subdirPath := path.Join(dirName, fileinfo.Name())
 				if fileinfo.IsDir() {
 					subfolders = append(subfolders, subdirPath)
-				} else {
+				} else if (path.Ext(filename) == ".flac") && !isDir {
 					files = append(files, subdirPath)
 				}
 			}
