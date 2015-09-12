@@ -139,14 +139,6 @@ func notifyDeleteMode(c *cli.Context) {
 	}
 }
 
-func ifTrimPrefix(s, prefix string) string {
-	if !strings.HasPrefix(s, prefix) {
-		panic(fmt.Sprintf("Expected prefix %s, but line is: %s", prefix, s))
-		// TODO: see above error handling
-	}
-	return strings.TrimPrefix(s, prefix)
-}
-
 // there is a better way to do this
 func formatDuration(d time.Duration) (str string) {
 	hours := int(d.Hours())

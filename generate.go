@@ -152,7 +152,7 @@ func getTagsFromFile(filepath string, album *AlbumData, albumDuration *time.Dura
 			case "date":
 				album.Date = tagValue
 			case "album":
-				album.Album = ifTrimPrefix(tagValue, album.Date+" ")
+				album.Album = tagValue[11:]
 			}
 		}
 	}
