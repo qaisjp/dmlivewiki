@@ -86,6 +86,70 @@ func generateWikifiles(c *cli.Context) {
 	}
 }
 
+func wikiGetInfoFromFlac(filepath string, parsedData *WikiAlbumData) bool {
+	directoryContents, err := ioutil.ReadDir(filepath)
+	if err != nil {
+		fmt.Println("failed to get directory contents")
+		fmt.Println(err)
+		return false
+	}
+
+	for _, file := range directoryContents {
+		if file.IsDir() {
+			if wikiGetInfoFromFlac(fpath.Join(filepath, file.Name()), parsedData) {
+				return true
+			}
+		} else if fpath.Ext(file.Name()) == ".flac" {
+			data, err := exec.Command(
+				"metaflac",
+				"--show-sample-rate",
+				"--show-bps", // update numbers below
+				fpath.Join(filepath, file.Name()),
+			).Output()
+
+			if err != nil {
+				fmt.Println("metaflac returned an invalid response for sample-rate/bps")
+				if data != nil {
+					fmt.Println(data)
+				}
+				panic(err)
+			}
+
+			lines := strings.Split(string(data), "\n")
+			if len(lines) != 1+2 {
+				// Update '2' below and above
+				fmt.Println("expected 2 metaflac lines, got", len(lines)-1)
+				continue
+			}
+
+			failure := false
+			for i, line := range lines {
+				line := strings.TrimSpace(line)
+
+				if i == 0 {
+					rateFloat, err := strconv.ParseFloat(line, 32)
+					if err != nil {
+						fmt.Print("could not convert sample-rate to float")
+						fmt.Println(err)
+						failure = true
+						break
+					}
+					parsedData.SampleRate = strconv.FormatFloat(rateFloat/1000, 'f', -1, 32) + "KHz"
+				} else if i == 1 {
+					parsedData.BPS = line
+				}
+			}
+
+			if !failure {
+				return true
+			}
+		}
+	}
+
+	fmt.Println("failed to find file for sampling info")
+	return false
+}
+
 func generateWikifile(filepath string, foldername string, regex *regexp.Regexp, wikiTemplate *template.Template, deleteMode bool) {
 	basepath := fpath.Join(filepath, foldername)
 	infofile := basepath + ".txt"
@@ -127,56 +191,8 @@ func generateWikifile(filepath string, foldername string, regex *regexp.Regexp, 
 	b := bytesize.New(size)
 	parsedData.Size = b.String()
 
-	directoryContents, err := ioutil.ReadDir(filepath)
-	if err != nil {
-		fmt.Println("failed to get directory contents")
-		fmt.Println(err)
+	if !wikiGetInfoFromFlac(filepath, &parsedData) {
 		return
-	}
-
-	for _, file := range directoryContents {
-		if file.IsDir() || fpath.Ext(file.Name()) != ".flac" {
-			continue
-		}
-
-		data, err := exec.Command(
-			"metaflac",
-			"--show-sample-rate",
-			"--show-bps", // update numbers below
-			fpath.Join(filepath, file.Name()),
-		).Output()
-
-		if err != nil {
-			fmt.Println("metaflac returned an invalid response for sample-rate/bps")
-			if data != nil {
-				fmt.Println(data)
-			}
-			panic(err)
-		}
-
-		lines := strings.Split(string(data), "\n")
-		if len(lines) != 1+2 {
-			// Update '2' below and above
-			fmt.Println("expected 2 metaflac lines, got", len(lines)-1)
-			return
-		}
-
-		for i, line := range lines {
-			line := strings.TrimSpace(line)
-
-			if i == 0 {
-				rateFloat, err := strconv.ParseFloat(line, 32)
-				if err != nil {
-					fmt.Print("could not convert sample-rate to float")
-					fmt.Println(err)
-					return
-				}
-				parsedData.SampleRate = strconv.FormatFloat(rateFloat/1000, 'f', -1, 32) + "KHz"
-			} else if i == 1 {
-				parsedData.BPS = line
-			}
-		}
-		break
 	}
 
 	tracks := make([]WikiTrackData, 0)
