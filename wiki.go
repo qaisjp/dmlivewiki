@@ -203,7 +203,7 @@ func generateWikifile(filepath string, foldername string, regex *regexp.Regexp, 
 			parsedData.Notes = field
 		case 3:
 			// parse tracks
-			for index, track := range strings.Split(field, "\n") {
+			for _, track := range strings.Split(field, "\n") {
 				var trackData WikiTrackData
 				trackData.FolderName = foldername
 
@@ -226,7 +226,7 @@ func generateWikifile(filepath string, foldername string, regex *regexp.Regexp, 
 					trackData.FolderName = upath.Join(foldername, "CD"+cdStr)
 					trackData.CD = cdNumber
 
-					if (index != 0) && (lastTrack.CD != cdNumber) {
+					if lastTrack.CD != cdNumber {
 						currentTrackNumber = 0
 					}
 				} else {
