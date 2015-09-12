@@ -194,7 +194,11 @@ func generateWikifile(filepath string, foldername string, regex *regexp.Regexp, 
 
 		switch i {
 		case 1:
-			parsedData.Lineage = field
+			lineage := ""
+			for _, item := range strings.Split(field, "\n") {
+				lineage += "* " + strings.TrimSpace(item) + "\r\n"
+			}
+			parsedData.Lineage = lineage
 		case 2:
 			parsedData.Notes = field
 		case 3:
