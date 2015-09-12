@@ -99,7 +99,7 @@ You can listen to this entire recording below.
 
 == Download ==
 
-*[https://depechemode-live.com/torrents/{{.FolderName}}.torrent Download via torrent] - FLAC {{.BPS}}-bit {{.SampleRate}} - {{.Size}}
+*[https://www.depechemode-live.com/torrents/{{.FolderName}}.torrent Download via torrent] - FLAC {{.BPS}}-bit {{.SampleRate}} - {{.Size}}
 
 [[Category:Audience recordings]]
 [[Category:Source]]
