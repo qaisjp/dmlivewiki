@@ -243,7 +243,7 @@ func generateWikifile(filepath string, foldername string, regex *regexp.Regexp, 
 					// 		currentTrackNumber = 0
 					// 	}
 					// }
-					continue
+					// continue
 				}
 
 				name := strings.TrimSpace(str[l+1:])
