@@ -19,7 +19,7 @@ func wikiescape(s string) string {
 func createFile(filename string) *os.File {
 	f, err := os.Create(filename)
 	if err != nil {
-		panic(err)
+		panic(err.Error())
 	}
 	return f
 }
