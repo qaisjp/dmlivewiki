@@ -209,32 +209,31 @@ func generateWikifile(filepath string, foldername string, regex *regexp.Regexp, 
 
 				number := str[:f-2]
 				separator := strings.Index(number, ".")
-				if separator == -1 {
-					trackData.FolderName = foldername
-				} else {
+				if separator != -1 {
 					// This bit only uses the "path" library
 					// because URL's only use forward slash
 					cdStr := number[:separator]
 
 					cdNumber, err := strconv.Atoi(cdStr)
 					if err == nil {
-						trackData.FolderName = path.Join(foldername, "CD"+cdStr)
-					} else {
-						trackData.FolderName = path.Join(foldername, cdStr)
+						trackData.FolderName = "CD" + cdStr
 						trackData.CD = cdNumber
 
 						if (index != 0) && (lastTrack.CD != cdNumber) {
 							currentTrackNumber = 0
 						}
+					} else {
+						trackData.FolderName = path.Join(foldername, cdStr)
 					}
-					trackData.FolderName = path.Join(foldername, "CD"+cdStr)
 				}
 
 				name := strings.TrimSpace(str[l+1:])
 				nameWithoutSuffix := strings.TrimSuffix(name, " (*)")
 				trackData.HasAlternateLeadVocalist = name != nameWithoutSuffix
 				trackData.Name = nameWithoutSuffix
-				trackData.Index = currentTrackNumber + 1
+
+				currentTrackNumber += 1
+				trackData.Index = currentTrackNumber
 
 				lastTrack = trackData
 				tracks = append(tracks, trackData)
