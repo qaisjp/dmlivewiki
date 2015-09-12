@@ -157,9 +157,7 @@ func formatDuration(d time.Duration) (str string) {
 
 	seconds := int(d.Seconds())
 
-	if (hours == 0) && (minutes == 0) {
-		str += fmt.Sprintf("%d", seconds)
-	} else if hours == 0 {
+	if hours == 0 {
 		str += fmt.Sprintf("%d:%02d", minutes, seconds)
 	} else {
 		str += fmt.Sprintf("%d:%02d:%02d", hours, minutes, seconds)
