@@ -83,8 +83,6 @@ func generateFile(filepath string, name string, tour Tour, deleteMode bool) {
 	album := new(AlbumData)
 	album.Tour = tour.Name
 
-	var duration int64 = 0 // duration incrementer for the album
-
 	useCDNames := false
 	folders := make([]string, 0)
 	extraFolders := make([]string, 0)
@@ -144,8 +142,9 @@ func generateFile(filepath string, name string, tour Tour, deleteMode bool) {
 		fmt.Println("Warning! Extra non CD folders inside", filepath)
 	}
 
+	albumDuration := time.Duration(0) // duration incrementer for the album
 	for _, file := range iterating {
-		track := getTagsFromFile(path.Join(filepath, file), album, &duration)
+		track := getTagsFromFile(path.Join(filepath, file), album, &albumDuration)
 
 		if tour.Tracks != nil {
 			_, containsAlternateLeadVocalist := tour.Tracks[track.Title]
@@ -165,11 +164,7 @@ func generateFile(filepath string, name string, tour Tour, deleteMode bool) {
 		return
 	}
 
-	format := "4:05" // minute:0second
-	if duration >= 3600 {
-		format = "15:04:05" // duration is longer than an hour
-	}
-	album.Duration = time.Unix(duration, 0).Format(format)
+	album.Duration = formatDuration(albumDuration)
 
 	funcMap := template.FuncMap{"wikiescape": wikiescape}
 	t := template.Must(template.New("generate").Funcs(funcMap).Parse(informationTemplate))

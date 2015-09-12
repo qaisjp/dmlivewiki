@@ -63,7 +63,7 @@ func getTourFromTourFile(filepath string, tour *Tour) error {
 }
 
 // tags: http://age.hobba.nl/audio/tag_frame_reference.html
-func getTagsFromFile(filepath string, album *AlbumData, albumDuration *int64) TrackData {
+func getTagsFromFile(filepath string, album *AlbumData, albumDuration *time.Duration) TrackData {
 	args := []string{
 		"--show-total-samples",
 		"--show-sample-rate",
@@ -103,7 +103,7 @@ func getTagsFromFile(filepath string, album *AlbumData, albumDuration *int64) Tr
 
 	lines := strings.Split(string(data), "\n")
 	if len(lines) != len(args) {
-		panic(fmt.Sprintf("[invalid metaflac output] Expected %d lines, got %d", len(args), len(lines)-1))
+		panic(fmt.Sprintf("[invalid metaflac output] Expected %d lines, got %d", len(args), len(lines)))
 		// todo, return a bool to delete this file
 		// and say that the current file is being skipped
 		// perhaps an --ignore flag to enable this feature
@@ -155,9 +155,9 @@ func getTagsFromFile(filepath string, album *AlbumData, albumDuration *int64) Tr
 			}
 		}
 	}
-	duration := samples / sampleRate
+	duration := time.Duration(samples/sampleRate) * time.Second
 	*albumDuration += duration
-	track.Duration = time.Unix(duration, 0).Format("4:05")
+	track.Duration = formatDuration(duration)
 
 	return track
 }

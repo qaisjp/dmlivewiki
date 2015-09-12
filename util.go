@@ -9,6 +9,7 @@ import (
 	"path"
 	fpath "path/filepath"
 	"strings"
+	"time"
 )
 
 func wikiescape(s string) string {
@@ -134,4 +135,24 @@ func ifTrimPrefix(s, prefix string) string {
 		// TODO: see above error handling
 	}
 	return strings.TrimPrefix(s, prefix)
+}
+
+// there is a better way to do this
+func formatDuration(d time.Duration) (str string) {
+	hours := int(d.Hours())
+	d -= (time.Duration(hours) * time.Hour)
+
+	minutes := int(d.Minutes())
+	d -= (time.Duration(minutes) * time.Minute)
+
+	seconds := int(d.Seconds())
+
+	if (hours == 0) && (minutes == 0) {
+		str += fmt.Sprintf("%d", seconds)
+	} else if hours == 0 {
+		str += fmt.Sprintf("%d:%02d", minutes, seconds)
+	} else {
+		str += fmt.Sprintf("%d:%02d:%02d", hours, minutes, seconds)
+	}
+	return
 }
