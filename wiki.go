@@ -8,7 +8,6 @@ import (
 	"io/ioutil"
 	"os"
 	"os/exec"
-	"path"
 	fpath "path/filepath"
 	"regexp"
 	"strconv"
@@ -215,16 +214,30 @@ func generateWikifile(filepath string, foldername string, regex *regexp.Regexp, 
 					cdStr := number[:separator]
 
 					cdNumber, err := strconv.Atoi(cdStr)
-					if err == nil {
-						trackData.FolderName = "CD" + cdStr
-						trackData.CD = cdNumber
-
-						if (index != 0) && (lastTrack.CD != cdNumber) {
-							currentTrackNumber = 0
-						}
-					} else {
-						trackData.FolderName = path.Join(foldername, cdStr)
+					if err != nil {
+						panic(err.Error())
 					}
+					trackData.FolderName = "CD" + cdStr
+					trackData.CD = cdNumber
+
+					if (index != 0) && (lastTrack.CD != cdNumber) {
+						currentTrackNumber = 0
+					}
+				} else {
+					// Here lies incomplete support for "Bonus." tracks
+					// you need to add support for using filenames instead
+					// of tracknumbers for bonus tracks
+
+					// _, err := strconv.Atoi(number)
+					// if err != nil {
+					// 	trackData.FolderName = number
+					// 	trackData.CD = -1
+
+					// 	if lastTrack.FolderName != number {
+					// 		currentTrackNumber = 0
+					// 	}
+					// }
+					continue
 				}
 
 				name := strings.TrimSpace(str[l+1:])
