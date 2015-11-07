@@ -78,7 +78,7 @@ Track list:
 
 Torrent downloaded from https://www.depechemode-live.com`
 
-var wikiTemplate = `== Notes ==
+const wikiTemplate = `== Notes ==
 
 {{.Notes}}
 
@@ -104,4 +104,4 @@ You can listen to this entire recording below.
 [[Category:Streamable]]
 `
 
-var wikiRegex = `(?:.|[\r\n])+[\r\n]+Lineage: ((?:.|[\r\n]+)*)[\r\n]+Notes: ((?:.|[\r\n]+)*)[\r\n]+This source is considered(?:.|[\r\n]+)*Track list:[\r\n]+[\r\n]+((?:.|[\r\n]+)*)[\r\n]+Total time: (.*)`
+const wikiRegex = `(?:.|[\r\n])+(\d{4}-\d{2}-\d{2})(?:.|[\r\n])+Lineage: ((?:.|[\r\n]+)*)[\r\n]+Notes: ((?:.|[\r\n]+)*)[\r\n]+This source is considered(?:.|[\r\n]+)*Track list:[\r\n]+[\r\n]+((?:.|[\r\n]+)*)[\r\n]+Total time: (.*)`

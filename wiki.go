@@ -95,6 +95,7 @@ func generateWikifiles(c *cli.Context) {
 			name := file.Name()
 			if name != "__wikifiles" {
 				generateWikifile(fpath.Join(filepath, name), name, regex, wikiTemplate, c.GlobalBool("delete"), wikifiles)
+				return
 			}
 		}
 	}
@@ -191,9 +192,9 @@ func generateWikifile(filepath string, foldername string, regex *regexp.Regexp, 
 	}
 
 	matches := regex.FindSubmatch(infobytes)
-	if len(matches) != 1+4 {
-		// 1 (entire string itself) + 4 (capture groups)
-		fmt.Println("expected 7 capturing groups, failure parsing!")
+	if len(matches) != 1+5 {
+		// (entire string itself) + (capture groups)
+		fmt.Println("parse failure, expected 6 capturing groups!")
 		return
 	}
 
@@ -221,7 +222,6 @@ func generateWikifile(filepath string, foldername string, regex *regexp.Regexp, 
 	for i, field := range matches {
 		if i == 0 {
 			// The first one is just itself
-			// Note: learn why it's just the input string
 			continue
 		}
 
@@ -229,14 +229,16 @@ func generateWikifile(filepath string, foldername string, regex *regexp.Regexp, 
 
 		switch i {
 		case 1:
+			// fmt.Println("Got date:" + field)
+		case 2:
 			lineage := ""
 			for _, item := range strings.Split(field, "\n") {
 				lineage += "*" + strings.TrimSpace(item) + "\r\n"
 			}
 			parsedData.Lineage = lineage
-		case 2:
-			parsedData.Notes = field
 		case 3:
+			parsedData.Notes = field
+		case 4:
 			// parse tracks
 			for _, track := range strings.Split(field, "\n") {
 				var trackData WikiTrackData
@@ -294,7 +296,7 @@ func generateWikifile(filepath string, foldername string, regex *regexp.Regexp, 
 				lastTrack = trackData
 				tracks = append(tracks, trackData)
 			}
-		case 4:
+		case 5:
 			parsedData.Duration = field
 		}
 	}
