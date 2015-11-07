@@ -245,7 +245,7 @@ func generateWikifile(filepath string, foldername string, regex *regexp.Regexp, 
 				fmt.Println(err.Error())
 				return
 			}
-			wikifile = fpath.Join(wikifile, strings.Replace(strings.Replace(str, "_", " ", -1), "/", "_", -1))
+			wikifile = fpath.Join(wikifile, strings.Replace(strings.Replace(str, "_", " ", -1), "/", "_", -1)) + ".wiki"
 			fmt.Printf("\n - %s... ", wikifile)
 		case 5:
 			// parse tracks
