@@ -6,6 +6,7 @@ import (
 	"github.com/codegangsta/cli"
 	"github.com/inhies/go-bytesize" // Do we really need this?
 	"io/ioutil"
+	"net/url"
 	"os"
 	"os/exec"
 	upath "path"
@@ -216,14 +217,6 @@ func generateWikifile(filepath string, foldername string, regex *regexp.Regexp, 
 	var lastTrack WikiTrackData
 	var currentTrackNumber int = 0
 
-	// Variables for piecing together the new filename
-	source, album := "", getAlbumNameFromPath(filepath)
-
-	if album == "" {
-		fmt.Println("could not get album")
-		return
-	}
-
 	for i, field := range matches {
 		if i == 0 {
 			// The first one is just itself
@@ -246,7 +239,14 @@ func generateWikifile(filepath string, foldername string, regex *regexp.Regexp, 
 		case 3:
 			parsedData.Notes = field
 		case 4:
-			source = field
+			str, err := url.QueryUnescape(field)
+			if err != nil {
+				fmt.Println("error unescaping query from url")
+				fmt.Println(err.Error())
+				return
+			}
+			wikifile = fpath.Join(wikifile, strings.Replace(strings.Replace(str, "_", " ", -1), "/", "_", -1))
+			fmt.Printf("\n - %s... ", wikifile)
 		case 5:
 			// parse tracks
 			for _, track := range strings.Split(field, "\n") {
@@ -311,10 +311,6 @@ func generateWikifile(filepath string, foldername string, regex *regexp.Regexp, 
 	}
 	parsedData.Tracks = tracks
 
-	// Piece together wikifile
-	wikifile = fpath.Join(wikifile, album+"_Source "+source+".wiki")
-	fmt.Printf("\n - %s... ", wikifile)
-
 	success := removeFile(wikifile, false)
 	if deleteMode {
 		message := "success!"
@@ -340,56 +336,4 @@ func generateWikifile(filepath string, foldername string, regex *regexp.Regexp, 
 
 		fmt.Println("success!")
 	}
-}
-
-func getAlbumNameFromPath(filepath string) string {
-	var iterateDirectory func(string) string
-	iterateDirectory = func(path string) string {
-		directoryContents, err := ioutil.ReadDir(path)
-		if err != nil {
-			fmt.Println("failed to get directory contents")
-			fmt.Println(err)
-			return ""
-		}
-
-		for _, file := range directoryContents {
-			isDir, name := file.IsDir(), file.Name()
-			if isDir && strings.HasPrefix(name, "CD") {
-				// Okay, we're in a CD based album...
-				return iterateDirectory(fpath.Join(path, name))
-			} else if !isDir && (fpath.Ext(name) == ".flac") {
-				return fpath.Join(path, name)
-			}
-		}
-
-		return ""
-	}
-
-	filepath = iterateDirectory(filepath)
-
-	// If we can't find a valid file to use
-	if filepath == "" {
-		return ""
-	}
-
-	data, err := exec.Command(
-		"metaflac",
-		"--show-tag=album",
-		filepath,
-	).Output()
-
-	if err != nil {
-		fmt.Println("metaflac returned an invalid response")
-		if data != nil {
-			fmt.Println(data)
-		}
-		return ""
-	}
-
-	lines := strings.Split(string(data), "\n")
-	if len(lines) != 2 {
-		panic(fmt.Sprintf("[invalid metaflac output] Expected %d lines, got %d", 2, len(lines)))
-	}
-
-	return strings.TrimSpace(lines[0][6:])
 }
