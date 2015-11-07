@@ -248,7 +248,10 @@ func generateWikifile(filepath string, foldername string, regex *regexp.Regexp, 
 
 			str = strings.Replace(str, "_", " ", -1) // make spaces in wikiformat real spaces
 			str = strings.Replace(str, "/", "_", -1) // make slashes fileurl compliant by making it a "_"
-			// str = strings.Trim(strconv.QuoteToASCII(str), "\"") // make it ascii escaped, and trim "s
+
+			str = strings.Trim(strconv.QuoteToASCII(str), "\"") // make it ascii escaped, and trim "s
+			str = strings.Replace(str, "\\", "^", -1)           // escape "\" with "^" so that the bash script can make it a codepoint again
+
 			wikifile = fpath.Join(wikifile, str+".wiki")
 			fmt.Printf("\n - %s... ", wikifile)
 		case 5:
