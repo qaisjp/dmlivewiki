@@ -189,9 +189,9 @@ func generateWikifile(filepath string, foldername string, regex *regexp.Regexp, 
 	}
 
 	matches := regex.FindSubmatch(infobytes)
-	if len(matches) != 1+5 {
+	if len(matches) != 1+regex.NumSubexp() {
 		// (entire string itself)+(capture groups)
-		fmt.Println("parse failure, expected 7 capturing groups!")
+		fmt.Printf("parse failure, expected %d capturing groups!\n", 1+regex.NumSubexp())
 		return
 	}
 
@@ -234,16 +234,18 @@ func generateWikifile(filepath string, foldername string, regex *regexp.Regexp, 
 
 		switch i {
 		case 1:
+			parsedData.Lineage = field + "\n"
+		case 2:
 			lineage := ""
 			for _, item := range strings.Split(field, "\n") {
 				lineage += "*" + strings.TrimSpace(item) + "\r\n"
 			}
-			parsedData.Lineage = lineage
-		case 2:
-			parsedData.Notes = field
+			parsedData.Lineage += lineage
 		case 3:
-			source = field
+			parsedData.Notes = field
 		case 4:
+			source = field
+		case 5:
 			// parse tracks
 			for _, track := range strings.Split(field, "\n") {
 				var trackData WikiTrackData
@@ -301,7 +303,7 @@ func generateWikifile(filepath string, foldername string, regex *regexp.Regexp, 
 				lastTrack = trackData
 				tracks = append(tracks, trackData)
 			}
-		case 5:
+		case 6:
 			parsedData.Duration = field
 		}
 	}
