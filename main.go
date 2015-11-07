@@ -59,6 +59,7 @@ func main() {
 	app.Run(os.Args)
 }
 
+// Information template to write .txt info files from a folder
 var informationTemplate = `{{.Artist}}
 {{.Date}}
 {{.Album}}
@@ -78,6 +79,7 @@ Track list:
 
 Torrent downloaded from https://www.depechemode-live.com`
 
+// Wiki template to write the .wiki files from edited .txt info files
 const wikiTemplate = `== Notes ==
 
 {{.Notes}}
@@ -104,4 +106,5 @@ You can listen to this entire recording below.
 [[Category:Streamable]]
 `
 
+// Wiki regex to read an edited .txt info file and extract what is needed for a .wiki file
 const wikiRegex = `(?:.|[\r\n])+Lineage: ((?:.|[\r\n]+)*)[\r\n]+Notes: ((?:.|[\r\n]+)*)[\r\n]+This source is considered Source (\d)(?:.|[\r\n]+)*Track list:[\r\n]+[\r\n]+((?:.|[\r\n]+)*)[\r\n]+Total time: (.*)`
