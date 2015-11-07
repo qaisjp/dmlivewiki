@@ -29,7 +29,7 @@ func createFile(filename string) *os.File {
 	return f
 }
 
-func removeFile(filename string, log bool) {
+func removeFile(filename string, log bool) bool {
 	if log {
 		fmt.Printf("Removing %s...", filename)
 	}
@@ -40,18 +40,19 @@ func removeFile(filename string, log bool) {
 			if log {
 				fmt.Println(" does not exist!")
 			}
-			return
+			return false
 		} else if os.IsPermission(err) {
 			if log {
 				fmt.Println(" permission error!")
 			}
-			return
+			return false
 		}
 		panic(err)
 	}
 	if log {
 		fmt.Println(" success!")
 	}
+	return true
 }
 
 func isDirectory(filepath string) (bool, os.FileInfo, error) {

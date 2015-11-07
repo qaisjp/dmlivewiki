@@ -95,7 +95,6 @@ func generateWikifiles(c *cli.Context) {
 			name := file.Name()
 			if name != "__wikifiles" {
 				generateWikifile(fpath.Join(filepath, name), name, regex, wikiTemplate, c.GlobalBool("delete"), wikifiles)
-				return
 			}
 		}
 	}
@@ -168,26 +167,24 @@ func wikiGetInfoFromFlac(filepath string, parsedData *WikiAlbumData) bool {
 func generateWikifile(filepath string, foldername string, regex *regexp.Regexp, wikiTemplate *template.Template, deleteMode bool, outBasepath string) {
 	basepath := fpath.Join(filepath, foldername)
 	infofile := basepath + ".txt"
-	wikifile := basepath + ".wiki"
-
+	wikifile := filepath
 	if outBasepath != "" {
-		wikifile = fpath.Join(outBasepath, foldername) + ".wiki"
+		wikifile = outBasepath
 	}
 
-	removeFile(wikifile, deleteMode)
-	if deleteMode {
-		return
+	if !deleteMode {
+		fmt.Printf("Generating from %s... ", infofile)
 	}
 
-	fmt.Printf("Generating from %s... ", infofile)
 	infobytes, err := ioutil.ReadFile(infofile)
 	if err != nil {
 		reason := "infofile doesn't exist"
 		if !os.IsNotExist(err) {
-			reason = err.Error()
+			fmt.Printf(reason+" (%s)\n", err.Error())
+		} else {
+			fmt.Println(reason)
 		}
 
-		fmt.Printf("could not open file (%s)\n", reason)
 		return
 	}
 
@@ -219,6 +216,11 @@ func generateWikifile(filepath string, foldername string, regex *regexp.Regexp, 
 	var lastTrack WikiTrackData
 	var currentTrackNumber int = 0
 
+	// Variables for piecing together the new filename
+	var date string
+	var location string = "location"
+	var source string // this is actually just a single digit
+
 	for i, field := range matches {
 		if i == 0 {
 			// The first one is just itself
@@ -229,7 +231,7 @@ func generateWikifile(filepath string, foldername string, regex *regexp.Regexp, 
 
 		switch i {
 		case 1:
-			// fmt.Println("Got date:" + field)
+			date = field
 		case 2:
 			lineage := ""
 			for _, item := range strings.Split(field, "\n") {
@@ -239,7 +241,7 @@ func generateWikifile(filepath string, foldername string, regex *regexp.Regexp, 
 		case 3:
 			parsedData.Notes = field
 		case 4:
-			// fmt.Println("The source is: " + field)
+			source = field
 		case 5:
 			// parse tracks
 			for _, track := range strings.Split(field, "\n") {
@@ -303,6 +305,16 @@ func generateWikifile(filepath string, foldername string, regex *regexp.Regexp, 
 		}
 	}
 	parsedData.Tracks = tracks
+
+	// Piece together wikifile
+	wikifile = fpath.Join(wikifile, date+" "+location+"_"+source+".wiki")
+
+	if removeFile(wikifile, deleteMode) && !deleteMode {
+		fmt.Print("overwritten...")
+	}
+	if deleteMode {
+		return
+	}
 
 	wikiout := createFile(wikifile)
 	defer wikiout.Close()
