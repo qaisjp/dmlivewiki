@@ -135,7 +135,7 @@ func shouldContinue(c *cli.Context) bool {
 
 func notifyDeleteMode(c *cli.Context) {
 	if c.GlobalBool("delete") {
-		fmt.Print("You are running in **DELETE MODE** - data will be permanently lost")
+		fmt.Println("You are running in **DELETE MODE** - data will be permanently lost")
 	}
 }
 

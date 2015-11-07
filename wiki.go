@@ -73,15 +73,29 @@ func generateWikifiles(c *cli.Context) {
 	}
 
 	if mode == "single" {
-		generateWikifile(filepath, fileInfo.Name(), regex, wikiTemplate, c.GlobalBool("delete"))
+		generateWikifile(filepath, fileInfo.Name(), regex, wikiTemplate, c.GlobalBool("delete"), "")
 		return
+	}
+
+	// Create the wikifiles folder path
+	wikifiles := fpath.Join(filepath, "__wikifiles")
+
+	// MkdirAll is used instead of Mkdir because this function
+	// doesn't error if the folder already exists
+	err = os.MkdirAll(wikifiles, os.ModeDir)
+	if err != nil {
+		fmt.Println("Internal error creating __wikifiles folder")
+		fmt.Println(err.Error())
+		os.Exit(1)
 	}
 
 	files, _ := ioutil.ReadDir(filepath)
 	for _, file := range files {
 		if file.IsDir() {
 			name := file.Name()
-			generateWikifile(fpath.Join(filepath, name), name, regex, wikiTemplate, c.GlobalBool("delete"))
+			if name != "__wikifiles" {
+				generateWikifile(fpath.Join(filepath, name), name, regex, wikiTemplate, c.GlobalBool("delete"), wikifiles)
+			}
 		}
 	}
 }
@@ -150,10 +164,14 @@ func wikiGetInfoFromFlac(filepath string, parsedData *WikiAlbumData) bool {
 	return false
 }
 
-func generateWikifile(filepath string, foldername string, regex *regexp.Regexp, wikiTemplate *template.Template, deleteMode bool) {
+func generateWikifile(filepath string, foldername string, regex *regexp.Regexp, wikiTemplate *template.Template, deleteMode bool, outBasepath string) {
 	basepath := fpath.Join(filepath, foldername)
 	infofile := basepath + ".txt"
 	wikifile := basepath + ".wiki"
+
+	if outBasepath != "" {
+		wikifile = fpath.Join(outBasepath, foldername) + ".wiki"
+	}
 
 	removeFile(wikifile, deleteMode)
 	if deleteMode {
