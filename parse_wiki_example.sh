@@ -23,10 +23,10 @@ FILES=*.wiki
 for filename in $FILES
 do
 	# Replace caret with "\"
-	decoded=${filename/^/\\};
+	decoded=${filename//^/\\};
 
 	# Replace "_" with "/"
-	decoded=${decoded/_/\/};
+	decoded=${decoded//_/\/};
 
 	# Remove .wiki from title
 	decoded=${decoded/.wiki/};
