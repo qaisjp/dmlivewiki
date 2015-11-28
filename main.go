@@ -91,6 +91,7 @@ You can listen to this entire recording below.
 <html5media>https://media.depechemode-live.com/stream/{{.FolderName}}/complete.m4a</html5media>
 
 == Track list ==
+
 {{range .Tracks}}{{.LinePrefix}}[{{.Duration}}] <sm2>https://media.depechemode-live.com/stream/{{.FolderName}}/{{printf "%02d" .Index}}.m4a</sm2> [[{{.Name}}]]{{if .HasAlternateLeadVocalist}} (*){{end}}
 {{end}}*Total time: {{.Duration}}
 
