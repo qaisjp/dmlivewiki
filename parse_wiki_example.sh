@@ -28,6 +28,9 @@ do
 	# Replace "_" with "/"
 	decoded=${decoded/_/\/};
 
+	# Remove .wiki from title
+	decoded=${decoded/.wiki/};
+
 	# Now actually decode it
 	decoded=$(echo -en $decoded);
 
