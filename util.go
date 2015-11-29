@@ -16,6 +16,7 @@ func wikiescape(s string) string {
 	return url.QueryEscape(strings.Replace(s, " ", "_", -1))
 }
 
+// not needed anymore
 func createFile(filename string) *os.File {
 	f, err := os.Create(filename)
 	if err != nil {
@@ -29,6 +30,7 @@ func createFile(filename string) *os.File {
 	return f
 }
 
+// a bit of a mess
 func removeFile(filename string, log bool) bool {
 	if log {
 		fmt.Printf("Removing %s...", filename)
@@ -47,7 +49,9 @@ func removeFile(filename string, log bool) bool {
 			}
 			return false
 		}
-		panic(err)
+		fmt.Println("Something happened when deleting your file! :(")
+		fmt.Println(err.Error())
+		return false
 	}
 	if log {
 		fmt.Println(" success!")
