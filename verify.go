@@ -10,10 +10,10 @@ import (
 	"os"
 	"os/exec"
 	fpath "path/filepath"
-	// "strings"
+	"strings"
 )
 
-var tick, cross string = "✔", "✖"
+var tick, cross string = `✔`, `✖`
 
 func verifyChecksum(c *cli.Context) {
 	fileInfo, filepath := checkFilepathArgument(c)
@@ -77,7 +77,7 @@ func verifyProcessPath(directory string, name string, workingDirectory string) {
 			if err == md5Err {
 				file = "md5"
 			}
-			fmt.Printf("\n> error with %s (%s)", file, getFileErrorReason(err))
+			fmt.Printf("\n> %s read error: (%s)", file, getFileErrorReason(err))
 		}
 	}
 
@@ -114,7 +114,7 @@ func verifyMD5(md5Filename string, directory string) (success, readError bool) {
 	file, err := os.Open(md5Filename)
 	defer file.Close()
 	if err != nil {
-		fmt.Printf("\n> md5 read err (%s)", err.Error())
+		fmt.Printf("\n> md5: read err (%s)", err.Error())
 
 		// we won't return readError at true because that's intended
 		// for individual file read errors! this should be clearer
@@ -134,13 +134,13 @@ func verifyMD5(md5Filename string, directory string) (success, readError bool) {
 		// Read the file
 		data, err := ioutil.ReadFile(fpath.Join(directory, filename))
 		if err != nil {
-			fmt.Printf("\n> md5 read error with %s (%s)", filename, getFileErrorReason(err))
+			fmt.Printf("\n> md5: read error with %s (%s)", filename, getFileErrorReason(err))
 			success = false
 			readError = true
 		}
 
 		if fmt.Sprintf("%x", md5.Sum(data)) != checksum {
-			fmt.Printf("\n> md5 mismatch for \"%s\"", filename)
+			fmt.Printf("\n> md5: mismatch for \"%s\"", filename)
 			success = false
 		}
 	}
@@ -152,60 +152,115 @@ func verifyFFP(ffpFilename string, directory string, workingDirectory string) (s
 	file, err := os.Open(ffpFilename)
 	defer file.Close()
 	if err != nil {
-		fmt.Printf("\n> ffp read err (%s)", err.Error())
+		fmt.Printf("\n> ffp: read err (%s)", err.Error())
 		return
 	}
+
+	var ffpFileBuffer bytes.Buffer // contains actual ffp content
+	var files, checksums []string
 
 	reader := bufio.NewReader(file)
 	scanner := bufio.NewScanner(reader)
-
-	// we use this to store our actual ffp contents
-	var ffpFileBuffer bytes.Buffer
-
-	// for the metaflac execution
-	files := []string{
-		// The first arg for ffpPool is this
-		// because we're going to dump the entire
-		// pool in the command later
-		"--show-md5sum",
-	}
-
 	for scanner.Scan() {
 		line := scanner.Text()
-		ffpFileBuffer.WriteString(line)
-		ffpFileBuffer.WriteString("\r\n") // equality check won't be nice x-platform
+		ffpFileBuffer.WriteString(line + "\r\n")
 
 		// The line has to be atleast 34 characters long
 		if len(line) < 34 {
-			fmt.Print("\n> ffp has an incorrect format")
-			return
+			fmt.Print("\n> ffp: incorrect line format")
+			fmt.Printf("\n>> content (len:%d): %s", len(line), line)
+			continue
 		}
 
-		md5sumIndex := len(line) - 32
-		// checksum := line[md5sumIndex:]
-		filename := line[:md5sumIndex-1]
-		files = append(files, filename)
+		filename, checksum := verifyReadFFP(line)
 
-		// we don't need to check if it exists, because
-		// md5 told our function caller not to call us
-		// if mr. md5 couldn't find us
+		_, err := os.Stat(fpath.Join(directory, filename))
+		if err == nil {
+			files = append(files, filename)
+			checksums = append(checksums, checksum)
+		} else {
+			fmt.Printf("\n> ffp: \"%s\" has a problem (%s)", filename, getFileErrorReason(err))
+		}
 	}
 
-	cmd := exec.Command(fpath.Join(workingDirectory, "metaflac"), files[:]...)
-	cmd.Dir = directory
-
-	data, err := cmd.Output()
-	if err != nil {
-		fmt.Printf("\n> ffp metaflac error (%s)\n", err.Error())
-		if data != nil {
-			fmt.Printf(">> %s", data)
-		}
+	if len(files) == 0 {
+		fmt.Print("\n> ffp file contains no valid flac files")
 		return
 	}
 
-	success = bytes.Equal(data, ffpFileBuffer.Bytes())
-	if !success {
-		fmt.Printf("\n> ffp files aren't the same")
+	var cmdStdout, cmdStderr bytes.Buffer
+	cmdArgs := append(
+		[]string{
+			"--show-md5sum",
+		},
+		files[:]...,
+	)
+
+	cmd := exec.Command(fpath.Join(workingDirectory, "metaflac"), cmdArgs[:]...)
+	cmd.Dir = directory
+	cmd.Stderr = &cmdStderr
+	cmd.Stdout = &cmdStdout
+
+	err = cmd.Run()
+	if err != nil {
+		fmt.Printf("\n> ffp metaflac error (%s)", err.Error())
 	}
+
+	if cmdStderr.Len() != 0 {
+		fmt.Print("\n> ffp metaflac returned error info, dumping output: \n\t",
+			// Replace every new line of the stderr with an indentation
+			strings.TrimSpace(strings.Replace(
+				cmdStderr.String(),
+				"\r\n",
+				"\n\t",
+				-1,
+			)),
+		)
+
+		if cmdStdout.Len() == 0 {
+			return
+		}
+	}
+
+	success = true
+
+	// first do a quick equality check
+	if bytes.Equal(cmdStdout.Bytes(), ffpFileBuffer.Bytes()) {
+		// we don't need to check line by line
+		return
+	}
+
+	// some things failed, so now we need to go through each one
+	stdoutScanner := bufio.NewScanner(bufio.NewReader(&cmdStdout))
+	for stdoutScanner.Scan() {
+		line := stdoutScanner.Text()
+
+		for i, file := range files {
+			filename, checksum := verifyReadFFP(line)
+			if filename == file {
+				if checksum != checksums[i] {
+					fmt.Printf("\n> ffp: mismatch for \"%s\"", filename)
+					success = false
+				}
+
+				// remove this the verifying file from the files checking list
+				files = append(files[:i], files[i+1:]...)
+				checksums = append(checksums[:i], checksums[i+1:]...)
+				break
+			}
+
+		}
+	}
+
+	if len(files) != 0 {
+		fmt.Printf("\n> ffp: metaflac didn't like:\n\t", strings.Join(files, "\n\t"))
+		success = false
+	}
+
 	return
+}
+
+func verifyReadFFP(line string) (filename, checksum string) {
+	md5sumIndex := len(line) - 32
+	return line[:md5sumIndex-1], line[md5sumIndex:]
 }
