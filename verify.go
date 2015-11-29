@@ -196,7 +196,7 @@ func verifyFFP(ffpFilename string, directory string, workingDirectory string) (s
 
 	data, err := cmd.Output()
 	if err != nil {
-		fmt.Println("\n> ffp metaflac error: ")
+		fmt.Printf("\n> ffp metaflac error (%s)\n", err.Error())
 		if data != nil {
 			fmt.Printf(">> %s", data)
 		}
