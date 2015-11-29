@@ -55,7 +55,7 @@ func verifyChecksum(c *cli.Context) {
 
 	files, _ := ioutil.ReadDir(filepath)
 	for _, file := range files {
-		if file.IsDir() {
+		if file.IsDir() && file.Name() != "__wikifiles" {
 			verifyProcessPath(fpath.Join(filepath, file.Name()), file.Name(), workingDirectory)
 		}
 	}
