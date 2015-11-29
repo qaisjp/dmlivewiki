@@ -148,12 +148,12 @@ func verifyMD5(md5Filename string, directory string) (success, readError bool) {
 }
 
 // verify an ffp file against a directory
-func verifyFFP(ffpFilename string, directory string, workingDirectory string) bool {
+func verifyFFP(ffpFilename string, directory string, workingDirectory string) (success bool) {
 	file, err := os.Open(ffpFilename)
 	defer file.Close()
 	if err != nil {
 		fmt.Printf("\n> ffp read err (%s)", err.Error())
-		return false
+		return
 	}
 
 	reader := bufio.NewReader(file)
@@ -178,7 +178,7 @@ func verifyFFP(ffpFilename string, directory string, workingDirectory string) bo
 		// The line has to be atleast 34 characters long
 		if len(line) < 34 {
 			fmt.Print("\n> ffp has an incorrect format")
-			return false
+			return
 		}
 
 		md5sumIndex := len(line) - 32
@@ -198,10 +198,14 @@ func verifyFFP(ffpFilename string, directory string, workingDirectory string) bo
 	if err != nil {
 		fmt.Println("\n> ffp metaflac error: ")
 		if data != nil {
-			fmt.Print(">> ", data)
+			fmt.Printf(">> %s", data)
 		}
-		return false
+		return
 	}
 
-	return bytes.Equal(data, ffpFileBuffer.Bytes())
+	success = bytes.Equal(data, ffpFileBuffer.Bytes())
+	if !success {
+		fmt.Printf("\n> ffp files aren't the same")
+	}
+	return
 }
