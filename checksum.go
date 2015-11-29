@@ -35,6 +35,7 @@ func performChecksum(c *cli.Context) {
 		fmt.Println("could not get working directory for some reason")
 		fmt.Println("reason is: " + err.Error())
 		fmt.Println("aborting!")
+		return
 	}
 
 	if mode == "single" {
