@@ -97,6 +97,16 @@ func getLastPathComponents(filepath string, depth int) (absPath string) {
 	return
 }
 
+func getFileErrorReason(err error) string {
+	if os.IsNotExist(err) {
+		return "doesn't exist"
+	} else if os.IsPermission(err) {
+		return "permission error"
+	} else {
+		return err.Error()
+	}
+}
+
 func checkFilepathArgument(c *cli.Context) (os.FileInfo, string) {
 	if len(c.Args()) != 1 {
 		cli.ShowSubcommandHelp(c)
@@ -117,7 +127,7 @@ func getFileOfType(filepath string, wantDirectory bool, target string) (os.FileI
 		}
 		return nil, ""
 	}
-	return fileInfo, path.Clean(filepath)
+	return fileInfo, fpath.Clean(filepath)
 }
 
 func shouldContinue(c *cli.Context) bool {

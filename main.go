@@ -35,6 +35,11 @@ func main() {
 			Action: performChecksum,
 		},
 		{
+			Name:   "verify",
+			Usage:  "verify ffp and md5 files in directories",
+			Action: verifyChecksum,
+		},
+		{
 			Name:   "generate",
 			Usage:  "generate dirname.txt Infofile's for the passed directory",
 			Action: generateInformation,
