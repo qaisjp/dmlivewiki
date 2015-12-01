@@ -13,7 +13,7 @@ import (
 	"strings"
 )
 
-var tick, cross string = `✔`, `✖`
+var tick, cross string = `ok`, `bad`
 
 func verifyChecksum(c *cli.Context) {
 	fileInfo, filepath := checkFilepathArgument(c)
