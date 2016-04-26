@@ -212,10 +212,9 @@ func generateWikifile(filepath string, foldername string, regex *regexp.Regexp, 
 		return
 	}
 
-	tracks := make([]WikiTrackData, 0)
-
+	var tracks []WikiTrackData
 	var lastTrack WikiTrackData
-	var currentTrackNumber int = 0
+	var currentTrackNumber int
 
 	for i, field := range matches {
 		if i == 0 {
@@ -306,7 +305,7 @@ func generateWikifile(filepath string, foldername string, regex *regexp.Regexp, 
 				trackData.HasAlternateLeadVocalist = name != nameWithoutSuffix
 				trackData.Name = nameWithoutSuffix
 
-				currentTrackNumber += 1
+				currentTrackNumber++
 				trackData.Index = currentTrackNumber
 
 				lastTrack = trackData
