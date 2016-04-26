@@ -253,7 +253,7 @@ func verifyFFP(ffpFilename string, directory string, workingDirectory string) (s
 	}
 
 	if len(files) != 0 {
-		fmt.Printf("\n> ffp: metaflac didn't like:\n\t", strings.Join(files, "\n\t"))
+		fmt.Printf("\n> ffp: metaflac didn't like:\n\t%s", strings.Join(files, "\n\t"))
 		success = false
 	}
 
