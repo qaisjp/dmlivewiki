@@ -133,7 +133,6 @@ func getTagsFromFile(filepath string, album *AlbumData, albumDuration *time.Dura
 
 			if strings.LastIndex(strings.ToLower(line), prefix) == -1 {
 				panic(fmt.Sprintf("Expected prefix %s, but line is: %s", prefix, strings.ToLower(line)))
-				os.Exit(1)
 			}
 			tagValue := line[len(tagName)+1:]
 
