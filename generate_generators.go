@@ -83,10 +83,10 @@ func generateFile(filepath string, name string, tour Tour, deleteMode bool) {
 	album := new(AlbumData)
 	album.Tour = tour.Name
 
-	useCDNames := false
-	folders := make([]string, 0)
-	extraFolders := make([]string, 0)
-	files := make([]string, 0)
+	var useCDNames bool
+	var folders []string
+	var extraFolders []string
+	var files []string
 
 	directoryContents, _ := ioutil.ReadDir(filepath)
 	for _, fileinfo := range directoryContents {
@@ -113,8 +113,8 @@ func generateFile(filepath string, name string, tour Tour, deleteMode bool) {
 			fmt.Println("Warning! Files outside CD folders in", filepath)
 		}
 
-		files := make([]string, 0)
-		subfolders := make([]string, 0)
+		var files []string
+		var subfolders []string
 		for _, dirName := range folders {
 			subdirectory, _ := ioutil.ReadDir(path.Join(filepath, dirName))
 			for _, fileinfo := range subdirectory {
