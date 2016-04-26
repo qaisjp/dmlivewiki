@@ -96,17 +96,17 @@ func verifyProcessPath(directory string, name string, workingDirectory string) {
 	if md5Success && ffpSuccess {
 		fmt.Println(tick)
 		return
-	} else {
-		md5out, ffpOut := cross, cross
-		if md5Success {
-			md5out = tick
-		}
-		if ffpSuccess {
-			ffpOut = tick
-		}
-
-		fmt.Printf("\n> done! ffp(%s) md5(%s)\n\n", ffpOut, md5out)
 	}
+	
+	md5out, ffpOut := cross, cross
+	if md5Success {
+		md5out = tick
+	}
+	if ffpSuccess {
+		ffpOut = tick
+	}
+
+	fmt.Printf("\n> done! ffp(%s) md5(%s)\n\n", ffpOut, md5out)
 }
 
 // verify an md5 file against a directory
