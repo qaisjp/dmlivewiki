@@ -107,6 +107,7 @@ func getFileErrorReason(err error) string {
 		return err.Error()
 	}
 }
+
 func checkFilepathArgument(c *cli.Context) (os.FileInfo, string) {
 	if len(c.Args()) != 1 {
 		cli.ShowSubcommandHelp(c)
@@ -127,6 +128,7 @@ func getFileOfType(filepath string, wantDirectory bool, target string) (os.FileI
 		}
 		return nil, ""
 	}
+
 	return fileInfo, fpath.Clean(filepath)
 }
 

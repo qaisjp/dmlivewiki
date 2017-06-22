@@ -54,9 +54,9 @@ func performChecksum(c *cli.Context) {
 
 func checksumProcessPath(directory string, name string, deleteMode bool, workingDirectory string) {
 	directory = fpath.Clean(directory)
-	baseFilename := fpath.Join(directory, name+".")
-	ffpFilename := baseFilename + "ffp"
-	md5Filename := baseFilename + "md5"
+	baseFilename := fpath.Join(directory, name)
+	ffpFilename := baseFilename + ".ffp"
+	md5Filename := baseFilename + ".md5"
 
 	// If we're in delete mode, let's just delete the ffp and md5 files right away
 	if deleteMode {
@@ -114,7 +114,7 @@ func checksumProcessPath(directory string, name string, deleteMode bool, working
 				fmt.Println("!!This is the message: " + err.Error())
 			}
 
-			md5Buffer.WriteString(checksumFormatMD5(md5.Sum(data), name))
+			md5Buffer.WriteString(checksumFormatMD5(md5.Sum(data), strings.TrimPrefix(name, directory+"/")))
 			return nil
 		},
 	)
@@ -143,7 +143,7 @@ func checksumProcessPath(directory string, name string, deleteMode bool, working
 
 			hashes[i] = fmt.Sprintf("%s:%s", fpath.Base(ffpPool[i+2]), hash)
 		}
-		data = []byte(strings.Join(hashes, "\n"))
+		data = []byte(strings.Join(hashes, "\r\n"))
 
 		// The md5 buffer doesn't contain our ffp file, so let's write that to the buffer
 		md5Buffer.WriteString(checksumFormatMD5(md5.Sum(data), name+".ffp"))
