@@ -169,6 +169,8 @@ func wikiGetInfoFromFlac(filepath string, parsedData *WikiAlbumData) bool {
 func generateWikifile(filepath string, foldername string, regex *regexp.Regexp, wikiTemplate *template.Template, deleteMode bool, outBasepath string) {
 	basepath := fpath.Join(filepath, foldername)
 	infofile := basepath + ".txt"
+
+	// This is updated later
 	wikifile := filepath
 	if outBasepath != "" {
 		wikifile = outBasepath
