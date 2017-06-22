@@ -2,12 +2,13 @@ package main
 
 import (
 	"fmt"
-	"github.com/codegangsta/cli"
 	"io/ioutil"
 	"path"
 	"strings"
 	"text/template"
 	"time"
+
+	"gopkg.in/urfave/cli.v1"
 )
 
 func generateInformation(c *cli.Context) {

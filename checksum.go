@@ -4,12 +4,13 @@ import (
 	"bytes"
 	"crypto/md5"
 	"fmt"
-	"github.com/codegangsta/cli"
 	"io/ioutil"
 	"os"
 	"os/exec"
 	fpath "path/filepath"
 	"strings"
+
+	"gopkg.in/urfave/cli.v1"
 )
 
 func performChecksum(c *cli.Context) {
@@ -72,6 +73,7 @@ func checksumProcessPath(directory string, name string, deleteMode bool, working
 		// because we're going to dump the entire
 		// pool in the command later
 		"--show-md5sum",
+		"--no-filename",
 	}
 
 	// This walks through every file in the folder
@@ -118,9 +120,9 @@ func checksumProcessPath(directory string, name string, deleteMode bool, working
 	)
 
 	// If the pool contains atleast one **filename**
-	// the first item in the pool is actually just a flag!
-	if len(ffpPool) > 1 {
-		cmd := exec.Command(fpath.Join(workingDirectory, "metaflac"), ffpPool[:]...)
+	// the first two items in the pool is actually just a flag!
+	if len(ffpPool) > 2 {
+		cmd := exec.Command("metaflac", ffpPool[:]...)
 		cmd.Dir = directory
 
 		data, err := cmd.Output()
@@ -131,6 +133,17 @@ func checksumProcessPath(directory string, name string, deleteMode bool, working
 			}
 			panic(err)
 		}
+
+		hashes := strings.Split(string(data), "\n")
+		for i, hash := range hashes {
+			if (i == len(hashes)-1) && (hash == "") {
+				// Last line is an empty line
+				continue
+			}
+
+			hashes[i] = fmt.Sprintf("%s:%s", fpath.Base(ffpPool[i+2]), hash)
+		}
+		data = []byte(strings.Join(hashes, "\n"))
 
 		// The md5 buffer doesn't contain our ffp file, so let's write that to the buffer
 		md5Buffer.WriteString(checksumFormatMD5(md5.Sum(data), name+".ffp"))

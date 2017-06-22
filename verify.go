@@ -5,12 +5,13 @@ import (
 	"bytes"
 	"crypto/md5"
 	"fmt"
-	"github.com/codegangsta/cli"
 	"io/ioutil"
 	"os"
 	"os/exec"
 	fpath "path/filepath"
 	"strings"
+
+	"gopkg.in/urfave/cli.v1"
 )
 
 var tick, cross string = `ok`, `bad`
@@ -97,7 +98,7 @@ func verifyProcessPath(directory string, name string, workingDirectory string) {
 		fmt.Println(tick)
 		return
 	}
-	
+
 	md5out, ffpOut := cross, cross
 	if md5Success {
 		md5out = tick
@@ -196,7 +197,7 @@ func verifyFFP(ffpFilename string, directory string, workingDirectory string) (s
 		files[:]...,
 	)
 
-	cmd := exec.Command(fpath.Join(workingDirectory, "metaflac"), cmdArgs[:]...)
+	cmd := exec.Command("metaflac", cmdArgs[:]...)
 	cmd.Dir = directory
 	cmd.Stderr = &cmdStderr
 	cmd.Stdout = &cmdStdout

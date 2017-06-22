@@ -3,8 +3,6 @@ package main
 import (
 	"bytes"
 	"fmt"
-	"github.com/codegangsta/cli"
-	"github.com/inhies/go-bytesize" // Do we really need this?
 	"io/ioutil"
 	"net/url"
 	"os"
@@ -15,6 +13,9 @@ import (
 	"strconv"
 	"strings"
 	"text/template"
+
+	"github.com/inhies/go-bytesize" // Do we really need this?
+	"gopkg.in/urfave/cli.v1"
 )
 
 type WikiTrackData struct {

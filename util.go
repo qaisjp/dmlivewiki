@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"github.com/codegangsta/cli"
 	"io/ioutil"
 	"net/url"
 	"os"
@@ -10,6 +9,8 @@ import (
 	fpath "path/filepath"
 	"strings"
 	"time"
+
+	"gopkg.in/urfave/cli.v1"
 )
 
 func wikiescape(s string) string {
@@ -106,7 +107,6 @@ func getFileErrorReason(err error) string {
 		return err.Error()
 	}
 }
-
 func checkFilepathArgument(c *cli.Context) (os.FileInfo, string) {
 	if len(c.Args()) != 1 {
 		cli.ShowSubcommandHelp(c)
