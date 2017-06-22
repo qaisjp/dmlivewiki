@@ -119,6 +119,13 @@ func checkFilepathArgument(c *cli.Context) (os.FileInfo, string) {
 }
 
 func getFileOfType(filepath string, wantDirectory bool, target string) (os.FileInfo, string) {
+	filepath, err := fpath.Abs(filepath)
+	if err != nil {
+		fmt.Println("Could not find absolute directory for path. Error:")
+		fmt.Println(err.Error())
+		return nil, ""
+	}
+
 	isDirectory, fileInfo, _ := isDirectory(filepath)
 	if (fileInfo == nil) || (isDirectory != wantDirectory) {
 		if wantDirectory {
@@ -129,7 +136,7 @@ func getFileOfType(filepath string, wantDirectory bool, target string) (os.FileI
 		return nil, ""
 	}
 
-	return fileInfo, fpath.Clean(filepath)
+	return fileInfo, filepath
 }
 
 func shouldContinue(c *cli.Context) bool {
