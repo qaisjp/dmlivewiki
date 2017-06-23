@@ -1,8 +1,9 @@
 package main
 
 import (
-	"gopkg.in/urfave/cli.v1"
 	"os"
+
+	"gopkg.in/urfave/cli.v1"
 )
 
 func main() {
@@ -58,6 +59,11 @@ func main() {
 			Name:   "wiki",
 			Usage:  "generate dirname.wiki Wikifile's for the passed directory",
 			Action: generateWikifiles,
+		},
+		{
+			Name:   "find",
+			Usage:  "finds unfilled .txt files for the passed directory",
+			Action: findWikifiles,
 		},
 	}
 

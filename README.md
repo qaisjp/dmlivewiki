@@ -15,6 +15,9 @@ Use `dmlivewiki help` for help.
 - `dmlivewiki wiki <directory>`
     - Generates a `.wiki` file of each album in a given directory. The information in the wiki file is derived from the data in the corresponding "information file".
     - The filename is dervied from the "Album" field, which is also available in the "information file".
+- `dmlivewiki find <directory>`
+    - Looks through each information file in a given directory, and reports the absence of defined notes.
+
 
 # Requires
 This only requires `metaflac` to be on the system. You can obtain this from [xiph.org](https://xiph.org/flac/download.html), but the binary (distributed under the GPL) is distributed in the release zip.
