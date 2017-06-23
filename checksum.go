@@ -97,7 +97,7 @@ func checksumProcessPath(directory string, name string, deleteMode bool, working
 
 			name := strings.TrimPrefix(
 				path,
-				directory+"\\",
+				directory+string(os.PathSeparator),
 			)
 
 			if fpath.Ext(path) == ".flac" {
@@ -141,7 +141,7 @@ func checksumProcessPath(directory string, name string, deleteMode bool, working
 				continue
 			}
 
-			hashes[i] = fmt.Sprintf("%s:%s", fpath.Base(ffpPool[i+2]), hash)
+			hashes[i] = fmt.Sprintf("%s:%s", strings.TrimPrefix(ffpPool[i+2], directory), hash)
 		}
 		data = []byte(strings.Join(hashes, "\r\n"))
 
