@@ -84,7 +84,7 @@ func generateWikifiles(c *cli.Context) {
 
 	// MkdirAll is used instead of Mkdir because this function
 	// doesn't error if the folder already exists
-	err = os.MkdirAll(wikifiles, os.ModeDir)
+	err = os.MkdirAll(wikifiles, os.ModePerm)
 	if err != nil {
 		fmt.Println("Internal error creating __wikifiles folder")
 		fmt.Println(err.Error())
