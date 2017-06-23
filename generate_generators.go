@@ -67,7 +67,7 @@ func generateInformation(c *cli.Context) {
 
 	files, _ := ioutil.ReadDir(filepath)
 	for _, file := range files {
-		if file.IsDir() {
+		if file.IsDir() && (file.Name() != "__wikifiles") {
 			name := file.Name()
 			generateFile(path.Join(filepath, name), name, *tour, c.GlobalBool("delete"))
 		}
