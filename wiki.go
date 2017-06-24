@@ -251,6 +251,7 @@ func generateWikifile(filepath string, foldername string, wikiTemplate *template
 
 			str = strings.Replace(str, "_", " ", -1) // make spaces in wikiformat real spaces
 			str = strings.Replace(str, "/", "_", -1) // make slashes fileurl compliant by making it a "_"
+			str = strings.Replace(str, ":", "💩", -1) // makes colons fileurl compliant by making it a pile of poo
 
 			str = strings.Trim(strconv.QuoteToASCII(str), "\"") // make it ascii escaped, and trim "s
 			str = strings.Replace(str, "\\", "^", -1)           // escape "\" with "^" so that the bash script can make it a codepoint again
