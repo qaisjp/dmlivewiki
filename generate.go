@@ -9,6 +9,8 @@ import (
 	"strconv"
 	"strings"
 	"time"
+
+	"github.com/qaisjp/dmlivewiki/util"
 )
 
 type Tour struct {
@@ -157,7 +159,7 @@ func getTagsFromFile(filepath string, album *AlbumData, albumDuration *time.Dura
 	}
 	duration := time.Duration(samples/sampleRate) * time.Second
 	*albumDuration += duration
-	track.Duration = formatDuration(duration)
+	track.Duration = util.FormatDuration(duration)
 
 	return track
 }

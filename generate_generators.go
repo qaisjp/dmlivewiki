@@ -8,11 +8,12 @@ import (
 	"text/template"
 	"time"
 
+	"github.com/qaisjp/dmlivewiki/util"
 	"gopkg.in/urfave/cli.v1"
 )
 
 func generateInformation(c *cli.Context) {
-	fileInfo, filepath := checkFilepathArgument(c)
+	fileInfo, filepath := util.CheckFilepathArgument(c)
 	if fileInfo == nil {
 		return
 	}
@@ -30,7 +31,7 @@ func generateInformation(c *cli.Context) {
 
 	tourfile := c.String("tour-file")
 	if tourfile != "" {
-		fileInfo, tourfileClean := getFileOfType(tourfile, false, "tour-file")
+		fileInfo, tourfileClean := util.GetFileOfType(tourfile, false, "tour-file")
 		if fileInfo == nil {
 			return
 		}
@@ -40,9 +41,9 @@ func generateInformation(c *cli.Context) {
 
 	fmt.Println("The current tour is:", tourName)
 	fmt.Printf("The following filepath (%s mode) will be processed: %s\n", mode, filepath)
-	notifyDeleteMode(c)
+	util.NotifyDeleteMode(c)
 
-	if !shouldContinue(c) {
+	if !util.ShouldContinue(c) {
 		return
 	}
 
@@ -51,7 +52,7 @@ func generateInformation(c *cli.Context) {
 	if tourfile != "" { // tourFile is only for reading "alternate vocalists" into tracks map
 		if err := getTourFromTourFile(tourfile, tour); err != nil {
 			fmt.Println("[Error]", err)
-			if !shouldContinue(c) {
+			if !util.ShouldContinue(c) {
 				return
 			}
 		}
@@ -77,7 +78,7 @@ func generateInformation(c *cli.Context) {
 func generateFile(filepath string, name string, tour Tour, deleteMode bool) {
 	outputFilename := path.Join(filepath, name+".txt")
 	if deleteMode {
-		removeFile(outputFilename, true)
+		util.RemoveFile(outputFilename, true)
 		return
 	}
 
@@ -165,13 +166,13 @@ func generateFile(filepath string, name string, tour Tour, deleteMode bool) {
 		return
 	}
 
-	album.Duration = formatDuration(albumDuration)
+	album.Duration = util.FormatDuration(albumDuration)
 
-	funcMap := template.FuncMap{"wikiescape": wikiescape}
+	funcMap := template.FuncMap{"wikiescape": util.WikiEscape}
 	t := template.Must(template.New("generate").Funcs(funcMap).Parse(informationTemplate))
 
 	fmt.Println("Creating", outputFilename+"...")
-	infoFile := createFile(outputFilename)
+	infoFile := util.CreateFile(outputFilename)
 	defer infoFile.Close()
 
 	if infoFile != nil {

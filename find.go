@@ -8,11 +8,12 @@ import (
 	"regexp"
 	"strings"
 
+	"github.com/qaisjp/dmlivewiki/util"
 	"gopkg.in/urfave/cli.v1"
 )
 
 func findWikifiles(c *cli.Context) {
-	fileInfo, filepath := checkFilepathArgument(c)
+	fileInfo, filepath := util.CheckFilepathArgument(c)
 	if fileInfo == nil {
 		return
 	}
@@ -23,9 +24,9 @@ func findWikifiles(c *cli.Context) {
 	}
 
 	fmt.Printf("The following filepath (%s mode) will be processed: %s\n", mode, filepath)
-	notifyDeleteMode(c)
+	util.NotifyDeleteMode(c)
 
-	if !shouldContinue(c) {
+	if !util.ShouldContinue(c) {
 		return
 	}
 

@@ -1,4 +1,4 @@
-package main
+package util
 
 import (
 	"fmt"
@@ -13,12 +13,12 @@ import (
 	"gopkg.in/urfave/cli.v1"
 )
 
-func wikiescape(s string) string {
+func WikiEscape(s string) string {
 	return url.QueryEscape(strings.Replace(s, " ", "_", -1))
 }
 
 // not needed anymore
-func createFile(filename string) *os.File {
+func CreateFile(filename string) *os.File {
 	f, err := os.Create(filename)
 	if err != nil {
 		if os.IsPermission(err) {
@@ -32,7 +32,7 @@ func createFile(filename string) *os.File {
 }
 
 // a bit of a mess
-func removeFile(filename string, log bool) bool {
+func RemoveFile(filename string, log bool) bool {
 	if log {
 		fmt.Printf("Removing %s...", filename)
 	}
@@ -68,7 +68,7 @@ func isDirectory(filepath string) (bool, os.FileInfo, error) {
 	return fileInfo.IsDir(), fileInfo, err
 }
 
-func getDirectorySize(filepath string) (float64, error) {
+func GetDirectorySite(filepath string) (float64, error) {
 	var size float64
 	contents, err := ioutil.ReadDir(filepath)
 	if err != nil {
@@ -77,7 +77,7 @@ func getDirectorySize(filepath string) (float64, error) {
 
 	for _, file := range contents {
 		if file.IsDir() {
-			subsize, err := getDirectorySize(fpath.Join(filepath, file.Name()))
+			subsize, err := GetDirectorySite(fpath.Join(filepath, file.Name()))
 			if err != nil {
 				return -1, err
 			}
@@ -98,7 +98,7 @@ func getLastPathComponents(filepath string, depth int) (absPath string) {
 	return
 }
 
-func getFileErrorReason(err error) string {
+func GetFileErrorReason(err error) string {
 	if os.IsNotExist(err) {
 		return "doesn't exist"
 	} else if os.IsPermission(err) {
@@ -108,17 +108,17 @@ func getFileErrorReason(err error) string {
 	}
 }
 
-func checkFilepathArgument(c *cli.Context) (os.FileInfo, string) {
+func CheckFilepathArgument(c *cli.Context) (os.FileInfo, string) {
 	if len(c.Args()) != 1 {
 		cli.ShowSubcommandHelp(c)
 		return nil, ""
 	}
 
 	filepath := c.Args()[0]
-	return getFileOfType(filepath, true, "target")
+	return GetFileOfType(filepath, true, "target")
 }
 
-func getFileOfType(filepath string, wantDirectory bool, target string) (os.FileInfo, string) {
+func GetFileOfType(filepath string, wantDirectory bool, target string) (os.FileInfo, string) {
 	filepath, err := fpath.Abs(filepath)
 	if err != nil {
 		fmt.Println("Could not find absolute directory for path. Error:")
@@ -139,7 +139,7 @@ func getFileOfType(filepath string, wantDirectory bool, target string) (os.FileI
 	return fileInfo, filepath
 }
 
-func shouldContinue(c *cli.Context) bool {
+func ShouldContinue(c *cli.Context) bool {
 	// Ask to continue or just process?
 	if c.GlobalBool("force") {
 		fmt.Print("\n")
@@ -157,14 +157,14 @@ func shouldContinue(c *cli.Context) bool {
 	return true
 }
 
-func notifyDeleteMode(c *cli.Context) {
+func NotifyDeleteMode(c *cli.Context) {
 	if c.GlobalBool("delete") {
 		fmt.Println("You are running in **DELETE MODE** - data will be permanently lost")
 	}
 }
 
 // there is a better way to do this
-func formatDuration(d time.Duration) (str string) {
+func FormatDuration(d time.Duration) (str string) {
 	hours := int(d.Hours())
 	d -= (time.Duration(hours) * time.Hour)
 

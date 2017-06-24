@@ -15,6 +15,7 @@ import (
 	"text/template"
 
 	"github.com/inhies/go-bytesize" // Do we really need this?
+	"github.com/qaisjp/dmlivewiki/util"
 	"gopkg.in/urfave/cli.v1"
 )
 
@@ -40,7 +41,7 @@ type WikiAlbumData struct {
 }
 
 func generateWikifiles(c *cli.Context) {
-	fileInfo, filepath := checkFilepathArgument(c)
+	fileInfo, filepath := util.CheckFilepathArgument(c)
 	if fileInfo == nil {
 		return
 	}
@@ -51,9 +52,9 @@ func generateWikifiles(c *cli.Context) {
 	}
 
 	fmt.Printf("The following filepath (%s mode) will be processed: %s\n", mode, filepath)
-	notifyDeleteMode(c)
+	util.NotifyDeleteMode(c)
 
-	if !shouldContinue(c) {
+	if !util.ShouldContinue(c) {
 		return
 	}
 
@@ -202,7 +203,7 @@ func generateWikifile(filepath string, foldername string, regex *regexp.Regexp, 
 	var parsedData WikiAlbumData
 	parsedData.FolderName = foldername
 
-	size, err := getDirectorySize(filepath)
+	size, err := util.GetDirectorySite(filepath)
 	if err != nil {
 		fmt.Println("failed to get directory size")
 		fmt.Println(err)
@@ -320,7 +321,7 @@ func generateWikifile(filepath string, foldername string, regex *regexp.Regexp, 
 	}
 	parsedData.Tracks = tracks
 
-	success := removeFile(wikifile, false)
+	success := util.RemoveFile(wikifile, false)
 	if deleteMode {
 		message := "success!"
 		if !success {
@@ -332,7 +333,7 @@ func generateWikifile(filepath string, foldername string, regex *regexp.Regexp, 
 		fmt.Print("overwritten... ")
 	}
 
-	wikiout := createFile(wikifile)
+	wikiout := util.CreateFile(wikifile)
 	defer wikiout.Close()
 
 	if wikiout != nil {

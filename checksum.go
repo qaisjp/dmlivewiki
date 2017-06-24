@@ -10,11 +10,12 @@ import (
 	fpath "path/filepath"
 	"strings"
 
+	"github.com/qaisjp/dmlivewiki/util"
 	"gopkg.in/urfave/cli.v1"
 )
 
 func performChecksum(c *cli.Context) {
-	fileInfo, filepath := checkFilepathArgument(c)
+	fileInfo, filepath := util.CheckFilepathArgument(c)
 	if fileInfo == nil {
 		return
 	}
@@ -25,9 +26,9 @@ func performChecksum(c *cli.Context) {
 	}
 
 	fmt.Printf("The following filepath (%s mode) will be processed: %s\n", mode, filepath)
-	notifyDeleteMode(c)
+	util.NotifyDeleteMode(c)
 
-	if !shouldContinue(c) {
+	if !util.ShouldContinue(c) {
 		return
 	}
 
@@ -60,8 +61,8 @@ func checksumProcessPath(directory string, name string, deleteMode bool, working
 
 	// If we're in delete mode, let's just delete the ffp and md5 files right away
 	if deleteMode {
-		removeFile(ffpFilename, true)
-		removeFile(md5Filename, true)
+		util.RemoveFile(ffpFilename, true)
+		util.RemoveFile(md5Filename, true)
 		return
 	}
 

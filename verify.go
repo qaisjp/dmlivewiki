@@ -11,13 +11,15 @@ import (
 	fpath "path/filepath"
 	"strings"
 
+	"github.com/qaisjp/dmlivewiki/util"
+
 	"gopkg.in/urfave/cli.v1"
 )
 
 var tick, cross string = `ok`, `bad`
 
 func verifyChecksum(c *cli.Context) {
-	fileInfo, filepath := checkFilepathArgument(c)
+	fileInfo, filepath := util.CheckFilepathArgument(c)
 	if fileInfo == nil {
 		return
 	}
@@ -33,9 +35,9 @@ func verifyChecksum(c *cli.Context) {
 	}
 
 	fmt.Printf("The following filepath (%s mode) will be processed: %s\n", mode, filepath)
-	notifyDeleteMode(c)
+	util.NotifyDeleteMode(c)
 
-	if !shouldContinue(c) {
+	if !util.ShouldContinue(c) {
 		return
 	}
 
@@ -78,7 +80,7 @@ func verifyProcessPath(directory string, name string, workingDirectory string) {
 			if err == md5Err {
 				file = "md5"
 			}
-			fmt.Printf("\n> %s read error: (%s)", file, getFileErrorReason(err))
+			fmt.Printf("\n> %s read error: (%s)", file, util.GetFileErrorReason(err))
 		}
 	}
 
@@ -135,7 +137,7 @@ func verifyMD5(md5Filename string, directory string) (success, readError bool) {
 		// Read the file
 		data, err := ioutil.ReadFile(fpath.Join(directory, filename))
 		if err != nil {
-			fmt.Printf("\n> md5: read error with %s (%s)", filename, getFileErrorReason(err))
+			fmt.Printf("\n> md5: read error with %s (%s)", filename, util.GetFileErrorReason(err))
 			success = false
 			readError = true
 		}
@@ -180,7 +182,7 @@ func verifyFFP(ffpFilename string, directory string, workingDirectory string) (s
 			files = append(files, filename)
 			checksums = append(checksums, checksum)
 		} else {
-			fmt.Printf("\n> ffp: \"%s\" has a problem (%s)", filename, getFileErrorReason(err))
+			fmt.Printf("\n> ffp: \"%s\" has a problem (%s)", filename, util.GetFileErrorReason(err))
 		}
 	}
 
