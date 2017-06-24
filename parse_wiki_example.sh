@@ -37,7 +37,7 @@ do
 	decoded=${decoded/.wiki/};
 
 	# Now actually decode it
-	decoded=$(printf '%s' $decoded);
+	decoded=$(printf '%s' "$decoded");
 
 	apply_to_command "$filename" "$decoded";
 done
