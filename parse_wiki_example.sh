@@ -1,4 +1,6 @@
-#!/bin/sh
+#!/bin/bash
+
+# shopt requires bash
 
 echo "Started!"
 echo "------"
@@ -17,6 +19,7 @@ apply_to_command (){
 }
 
 # Fancy thing to remove "*.wiki" if can't find anything
+# this needs bash
 shopt -s nullglob
 
 # Get all files in current directory
