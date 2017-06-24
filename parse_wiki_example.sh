@@ -25,6 +25,9 @@ do
 	# Replace caret with "\"
 	decoded=${filename//^/\\};
 
+	# Replace pile of poo emoji with ":"
+	decoded=${filename//💩/:}
+
 	# Replace "_" with "/"
 	decoded=${decoded//_/\/};
 
@@ -32,7 +35,7 @@ do
 	decoded=${decoded/.wiki/};
 
 	# Now actually decode it
-	decoded=$(echo -en $decoded);
+	decoded=$(printf '%s' $decoded);
 
 	apply_to_command "$filename" "$decoded";
 done
