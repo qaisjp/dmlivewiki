@@ -40,6 +40,8 @@ type WikiAlbumData struct {
 	BPS        string
 }
 
+var bracketRegex *regexp.Regexp
+
 func generateWikifiles(c *cli.Context) {
 	fileInfo, filepath := util.CheckFilepathArgument(c)
 	if fileInfo == nil {
@@ -58,12 +60,7 @@ func generateWikifiles(c *cli.Context) {
 		return
 	}
 
-	regex, err := regexp.Compile(wikiRegex)
-	if err != nil {
-		fmt.Println("Internal error - wiki regex could not be compiled!")
-		fmt.Println(err.Error())
-		os.Exit(1)
-	}
+	regex := regexp.MustCompile(wikiRegex)
 
 	wikiTemplate, err := template.New("wiki").Parse(
 		// Stupid windows
@@ -73,6 +70,12 @@ func generateWikifiles(c *cli.Context) {
 		fmt.Println("Internal error - wiki template could not be parsed!")
 		fmt.Println(err.Error())
 		os.Exit(1)
+	}
+
+	bracketRegex = regexp.MustCompile(`".*?"`)
+	if err != nil {
+		fmt.Println("Could not compile quote replacement regex for `wiki`")
+		panic(err)
 	}
 
 	if mode == "single" {
@@ -219,6 +222,7 @@ func generateWikifile(filepath string, foldername string, regex *regexp.Regexp, 
 	var tracks []WikiTrackData
 	var lastTrack WikiTrackData
 	var currentTrackNumber int
+	var notes string
 
 	for i, field := range matches {
 		if i == 0 {
@@ -240,7 +244,7 @@ func generateWikifile(filepath string, foldername string, regex *regexp.Regexp, 
 			}
 			parsedData.Lineage += lineage
 		case 3:
-			parsedData.Notes = field
+			notes = field
 		case 4:
 			str, err := url.QueryUnescape(field)
 			if err != nil {
@@ -320,6 +324,7 @@ func generateWikifile(filepath string, foldername string, regex *regexp.Regexp, 
 		}
 	}
 	parsedData.Tracks = tracks
+	parsedData.Notes = bracketRegex.ReplaceAllStringFunc(notes, wikiReplace(tracks))
 
 	success := util.RemoveFile(wikifile, false)
 	if deleteMode {
@@ -345,5 +350,17 @@ func generateWikifile(filepath string, foldername string, regex *regexp.Regexp, 
 		}
 
 		fmt.Println("success!")
+	}
+}
+
+func wikiReplace(tracks []WikiTrackData) func(string) string {
+	return func(str string) string {
+		trackName := str[1 : len(str)-1]
+		for _, track := range tracks {
+			if track.Name == trackName {
+				return "[[" + trackName + "]]"
+			}
+		}
+		return str
 	}
 }
