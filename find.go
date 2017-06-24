@@ -58,9 +58,9 @@ func findWikifile(filepath string, foldername string, regex *regexp.Regexp) {
 	infobytes, err := ioutil.ReadFile(infofile)
 	if err != nil {
 		if os.IsNotExist(err) {
-			fmt.Println("infofile doesn't exist")
+			fmt.Println("No infofile for", infofile)
 		} else {
-			fmt.Printf("error (%s)\n", err.Error())
+			fmt.Printf("error in (%s) \n", infofile, err.Error())
 		}
 		return
 	}
