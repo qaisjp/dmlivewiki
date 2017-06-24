@@ -142,7 +142,7 @@ func checksumProcessPath(directory string, name string, deleteMode bool, working
 				continue
 			}
 
-			hashes[i] = fmt.Sprintf("%s:%s", strings.TrimPrefix(ffpPool[i+2], directory), hash)
+			hashes[i] = strings.TrimSpace(fmt.Sprintf("%s:%s", strings.TrimPrefix(ffpPool[i+2], directory), hash))
 		}
 		data = []byte(strings.Join(hashes, "\r\n"))
 
