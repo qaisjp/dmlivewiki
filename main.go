@@ -119,4 +119,4 @@ You can listen to this entire recording below.
 `
 
 // Wiki regex to read an edited .txt info file and extract what is needed for a .wiki file
-const wikiRegex = `((?:.*[\r\n])?)Lineage: ((?:.|[\r\n]+)*)[\r\n]+Notes: ((?:.|[\r\n]+)*)[\r\n]+This source is conside(?:.|[\r\n])*wiki\/(.*)[\r\n]*Track list:[\r\n]+[\r\n]+((?:.|[\r\n]+)*)[\r\n]+Total time: (.*)`
+const wikiRegexText = `((?:.*[\r\n])?)Lineage: ((?:.|[\r\n]+)*)[\r\n]+Notes: ((?:.|[\r\n]+)*)[\r\n]+This source is conside(?:.|[\r\n])*wiki\/(.*)[\r\n]*Track list:[\r\n]+[\r\n]+((?:.|[\r\n]+)*)[\r\n]+Total time: (.*)`

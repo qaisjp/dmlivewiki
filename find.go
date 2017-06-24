@@ -30,15 +30,10 @@ func findWikifiles(c *cli.Context) {
 		return
 	}
 
-	regex, err := regexp.Compile(wikiRegex)
-	if err != nil {
-		fmt.Println("Internal error - wiki regex could not be compiled!")
-		fmt.Println(err.Error())
-		os.Exit(1)
-	}
+	wikiRegex = regexp.MustCompile(wikiRegexText)
 
 	if mode == "single" {
-		findWikifile(filepath, fileInfo.Name(), regex)
+		findWikifile(filepath, fileInfo.Name())
 		return
 	}
 
@@ -47,13 +42,13 @@ func findWikifiles(c *cli.Context) {
 		if file.IsDir() {
 			name := file.Name()
 			if name != "__wikifiles" {
-				findWikifile(fpath.Join(filepath, name), name, regex)
+				findWikifile(fpath.Join(filepath, name), name)
 			}
 		}
 	}
 }
 
-func findWikifile(filepath string, foldername string, regex *regexp.Regexp) {
+func findWikifile(filepath string, foldername string) {
 	infofile := fpath.Join(filepath, foldername+".txt")
 
 	infobytes, err := ioutil.ReadFile(infofile)
@@ -66,10 +61,10 @@ func findWikifile(filepath string, foldername string, regex *regexp.Regexp) {
 		return
 	}
 
-	matches := regex.FindSubmatch(infobytes)
-	if len(matches) != 1+regex.NumSubexp() {
+	matches := wikiRegex.FindSubmatch(infobytes)
+	if len(matches) != 1+wikiRegex.NumSubexp() {
 		// (entire string itself)+(capture groups)
-		fmt.Printf("parse failure, expected %d capturing groups!\n", 1+regex.NumSubexp())
+		fmt.Printf("parse failure, expected %d capturing groups!\n", 1+wikiRegex.NumSubexp())
 		return
 	}
 

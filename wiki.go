@@ -41,6 +41,7 @@ type WikiAlbumData struct {
 }
 
 var bracketRegex *regexp.Regexp
+var wikiRegex *regexp.Regexp
 
 func generateWikifiles(c *cli.Context) {
 	fileInfo, filepath := util.CheckFilepathArgument(c)
@@ -60,7 +61,8 @@ func generateWikifiles(c *cli.Context) {
 		return
 	}
 
-	regex := regexp.MustCompile(wikiRegex)
+	wikiRegex = regexp.MustCompile(wikiRegexText)
+	bracketRegex = regexp.MustCompile(`".*?"`)
 
 	wikiTemplate, err := template.New("wiki").Parse(
 		// Stupid windows
@@ -72,14 +74,8 @@ func generateWikifiles(c *cli.Context) {
 		os.Exit(1)
 	}
 
-	bracketRegex = regexp.MustCompile(`".*?"`)
-	if err != nil {
-		fmt.Println("Could not compile quote replacement regex for `wiki`")
-		panic(err)
-	}
-
 	if mode == "single" {
-		generateWikifile(filepath, fileInfo.Name(), regex, wikiTemplate, c.GlobalBool("delete"), "")
+		generateWikifile(filepath, fileInfo.Name(), wikiTemplate, c.GlobalBool("delete"), "")
 		return
 	}
 
@@ -100,7 +96,7 @@ func generateWikifiles(c *cli.Context) {
 		if file.IsDir() {
 			name := file.Name()
 			if name != "__wikifiles" {
-				generateWikifile(fpath.Join(filepath, name), name, regex, wikiTemplate, c.GlobalBool("delete"), wikifiles)
+				generateWikifile(fpath.Join(filepath, name), name, wikiTemplate, c.GlobalBool("delete"), wikifiles)
 			}
 		}
 	}
@@ -170,7 +166,7 @@ func wikiGetInfoFromFlac(filepath string, parsedData *WikiAlbumData) bool {
 	return false
 }
 
-func generateWikifile(filepath string, foldername string, regex *regexp.Regexp, wikiTemplate *template.Template, deleteMode bool, outBasepath string) {
+func generateWikifile(filepath string, foldername string, wikiTemplate *template.Template, deleteMode bool, outBasepath string) {
 	basepath := fpath.Join(filepath, foldername)
 	infofile := basepath + ".txt"
 
@@ -196,10 +192,10 @@ func generateWikifile(filepath string, foldername string, regex *regexp.Regexp, 
 		return
 	}
 
-	matches := regex.FindSubmatch(infobytes)
-	if len(matches) != 1+regex.NumSubexp() {
+	matches := wikiRegex.FindSubmatch(infobytes)
+	if len(matches) != 1+wikiRegex.NumSubexp() {
 		// (entire string itself)+(capture groups)
-		fmt.Printf("parse failure, expected %d capturing groups!\n", 1+regex.NumSubexp())
+		fmt.Printf("parse failure, expected %d capturing groups!\n", 1+wikiRegex.NumSubexp())
 		return
 	}
 
