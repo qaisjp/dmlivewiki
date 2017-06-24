@@ -61,7 +61,7 @@ func findWikifile(filepath string, foldername string, regex *regexp.Regexp) {
 		if os.IsNotExist(err) {
 			fmt.Println("No infofile for", infofile)
 		} else {
-			fmt.Printf("error in (%s) \n", infofile, err.Error())
+			fmt.Printf("error in %s (%s) \n", infofile, err.Error())
 		}
 		return
 	}
