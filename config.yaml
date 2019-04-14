@@ -1,0 +1,10 @@
+# Used globally
+baseDomain: "https://www.depechemode-live.com"
+
+# Used by the information template
+wikiPath: "" # If you do not provide this field, it defaults to "baseDomain/wiki"
+footer: "Torrent downloaded from https://www.depechemode-live.com"
+
+# Used by the wiki template
+streamPath: "https://media.depechemode-live.com/stream"
+torrentPath: "" # If you do not provide this field, it defaults to "baseDomain/torrents"

@@ -1,12 +1,21 @@
 package main
 
 import (
+	"fmt"
 	"os"
 
 	"gopkg.in/urfave/cli.v1"
 )
 
 func main() {
+	configPath := os.Getenv("config")
+	if len(os.Args) > 1 {
+		if err := parseConfig(configPath); err != nil {
+			fmt.Println(err.Error())
+			return
+		}
+	}
+
 	app := cli.NewApp()
 	app.Name = "dmlivewiki"
 	app.Usage = "dmlivewiki helper"
@@ -81,17 +90,17 @@ Lineage:
 Notes: 
 
 This source is considered Source 1 for this date:
-https://www.depechemode-live.com/wiki/{{wikiescape .Date}}_{{wikiescape .Album}}/Source_1
+$$wikiPath$$/{{wikiescape .Date}}_{{wikiescape .Album}}/Source_1
 
 Track list:
 
 {{range .Tracks}}{{.Prefix}}{{printf "%02d" .Index}}. [{{.Duration}}] {{.Title}}{{if .HasAlternateLeadVocalist}} (*){{end}}
 {{end}}Total time: {{.Duration}}
 
-Torrent downloaded from https://www.depechemode-live.com`
+$$footer$$`
 
 // Wiki template to write the .wiki files from edited .txt info files
-const wikiTemplate = `== Notes ==
+var wikiTemplate = `== Notes ==
 
 {{.Notes}}
 
@@ -99,11 +108,11 @@ const wikiTemplate = `== Notes ==
 
 You can listen to this entire recording below.
 
-<html5media>https://media.depechemode-live.com/stream/{{.FolderName}}/complete.m4a</html5media>
+<html5media>$$streamPath$$/{{.FolderName}}/complete.m4a</html5media>
 
 == Track list ==
 
-{{range .Tracks}}{{.LinePrefix}}[{{.Duration}}] <sm2>https://media.depechemode-live.com/stream/{{.FolderName}}/{{printf "%02d" .Index}}.m4a</sm2> [[{{.Name}}]]{{if .HasAlternateLeadVocalist}} (*){{end}}
+{{range .Tracks}}{{.LinePrefix}}[{{.Duration}}] <sm2>$$streamPath$$/{{.FolderName}}/{{printf "%02d" .Index}}.m4a</sm2> [[{{.Name}}]]{{if .HasAlternateLeadVocalist}} (*){{end}}
 {{end}}*Total time: {{.Duration}}
 
 == Lineage ==
@@ -111,7 +120,7 @@ You can listen to this entire recording below.
 {{.Lineage}}
 == Download ==
 
-*[https://www.depechemode-live.com/torrents/{{.FolderName}}.torrent Download via torrent] - FLAC {{.BPS}}-bit {{.SampleRate}} - {{.Size}}
+*[$$torrentPath$$/{{.FolderName}}.torrent Download via torrent] - FLAC {{.BPS}}-bit {{.SampleRate}} - {{.Size}}
 
 [[Category:Audience recordings]]
 [[Category:Source]]
