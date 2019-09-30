@@ -14,7 +14,7 @@ apply_to_command (){
 	
 	echo "> $2"
 	echo "From $1"
-	# php importTextFile.php "$1" --title "$2" --nooverwrite
+	php importTextFiles.php "$1" --title "$2"
 	echo "------"
 }
 
