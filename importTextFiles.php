@@ -45,7 +45,7 @@ class ImportTextFiles extends Maintenance {
 		$this->addOption( 'prefix', 'A string to place in front of the file name', false, true, 'p' );
 		$this->addOption( 'bot', 'Mark edits as bot edits in the recent changes list.' );
 		$this->addOption( 'rc', 'Place revisions in RecentChanges.' );
-		$this->addOption( 'title', 'title of the file' );
+		$this->addOption( 'title', 'title of the file', true, true, 't' );
 		$this->addArg( 'files', 'Files to import' );
 	}
 
