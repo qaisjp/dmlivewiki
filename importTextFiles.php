@@ -45,6 +45,7 @@ class ImportTextFiles extends Maintenance {
 		$this->addOption( 'prefix', 'A string to place in front of the file name', false, true, 'p' );
 		$this->addOption( 'bot', 'Mark edits as bot edits in the recent changes list.' );
 		$this->addOption( 'rc', 'Place revisions in RecentChanges.' );
+		$this->addOption( 'title', 'title of the file' );
 		$this->addArg( 'files', 'Files to import' );
 	}
 
@@ -101,7 +102,7 @@ class ImportTextFiles extends Maintenance {
 		$skipCount = 0;
 
 		foreach ( $files as $file => $text ) {
-			$pageName = $prefix . pathinfo( $file, PATHINFO_FILENAME );
+			$pageName = $this->getOption( 'title', '' );
 			$timestamp = $useTimestamp ? wfTimestamp( TS_UNIX, filemtime( $file ) ) : wfTimestampNow();
 
 			$title = Title::newFromText( $pageName );
@@ -195,6 +196,8 @@ class ImportTextFiles extends Maintenance {
 					);
 				}
 			}
+			
+			break;
 		}
 
 		$this->output( "Done! $successCount succeeded, $skipCount skipped.\n" );
