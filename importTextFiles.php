@@ -17,6 +17,10 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  * http://www.gnu.org/copyleft/gpl.html
  *
+ * SEE https://www.mediawiki.org/wiki/Manual:ImportTextFiles.php
+ * AND https://phabricator.wikimedia.org/source/mediawiki/browse/master/maintenance/importTextFiles.php
+ * AND https://www.mediawiki.org/wiki/Manual:Maintenance.php#addOption()
+ *
  * @file
  * @ingroup Maintenance
  */
