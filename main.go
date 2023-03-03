@@ -9,6 +9,9 @@ import (
 
 func main() {
 	configPath := os.Getenv("config")
+	if configPath == "" {
+		configPath = "config.yaml"
+	}
 	if len(os.Args) > 1 {
 		if err := parseConfig(configPath); err != nil {
 			fmt.Println(err.Error())
