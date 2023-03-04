@@ -123,7 +123,7 @@ You can listen to this entire recording below.
 {{.Lineage}}
 == Download ==
 
-*[$$torrentPath$$/{{.FolderName}}.torrent Download via torrent] - FLAC {{.BPS}}-bit {{.SampleRate}} - {{.Size}}
+*[$$torrentPath$$/{{.FolderName}}.zip Download ZIP] - FLAC {{.BPS}}-bit {{.SampleRate}} - {{.Size}}
 
 [[Category:Audience recordings]]
 [[Category:Source]]
