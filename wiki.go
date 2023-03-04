@@ -117,7 +117,7 @@ func wikiGetInfoFromFlac(filepath string, parsedData *WikiAlbumData) bool {
 			}
 		} else if fpath.Ext(file.Name()) == ".flac" {
 			data, err := exec.Command(
-				"./metaflac",
+				metaflacPath,
 				"--show-sample-rate",
 				"--show-bps", // update numbers below
 				fpath.Join(filepath, file.Name()),

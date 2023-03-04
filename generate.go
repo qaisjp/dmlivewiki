@@ -89,7 +89,7 @@ func getTagsFromFile(filepath string, album *AlbumData, albumDuration *time.Dura
 	args = append(args, filepath)
 
 	data, err := exec.Command(
-		"./metaflac",
+		metaflacPath,
 		args[:]...,
 	).Output()
 

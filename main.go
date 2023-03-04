@@ -1,13 +1,45 @@
 package main
 
 import (
+	"errors"
 	"fmt"
 	"os"
+	"os/exec"
 
 	"gopkg.in/urfave/cli.v1"
 )
 
+var metaflacPath string
+
+func findMetaflac() (string, error) {
+	// cwd, err := os.Getwd()
+	// if err != nil {
+	// 	return "", err
+	// }
+
+	// _, err = os.Stat("./metaflac")
+	// if err == nil {
+	// 	// absolute path to metaflac relative to cwd
+	// 	return filepath.Join(cwd, "metaflac"), nil
+	// }
+
+	path, err := exec.LookPath("metaflac")
+	if errors.Is(err, exec.ErrDot) {
+		return path, nil
+	} else if err != nil {
+		return "", err
+	}
+	return path, nil
+}
+
 func main() {
+	var err error
+	metaflacPath, err = findMetaflac()
+	if err != nil {
+		fmt.Println(err.Error())
+		return
+	}
+
 	configPath := os.Getenv("config")
 	if configPath == "" {
 		configPath = "config.yaml"
