@@ -123,7 +123,7 @@ func checksumProcessPath(directory string, name string, deleteMode bool, working
 	// If the pool contains atleast one **filename**
 	// the first two items in the pool is actually just a flag!
 	if len(ffpPool) > 2 {
-		cmd := exec.Command("metaflac", ffpPool[:]...)
+		cmd := exec.Command("./metaflac", ffpPool[:]...)
 		cmd.Dir = directory
 
 		data, err := cmd.Output()

@@ -199,7 +199,7 @@ func verifyFFP(ffpFilename string, directory string, workingDirectory string) (s
 		files[:]...,
 	)
 
-	cmd := exec.Command("metaflac", cmdArgs[:]...)
+	cmd := exec.Command("./metaflac", cmdArgs[:]...)
 	cmd.Dir = directory
 	cmd.Stderr = &cmdStderr
 	cmd.Stdout = &cmdStdout

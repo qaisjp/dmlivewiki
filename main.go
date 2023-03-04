@@ -115,7 +115,7 @@ You can listen to this entire recording below.
 
 == Track list ==
 
-{{range .Tracks}}{{.LinePrefix}}[{{.Duration}}] <sm2>$$streamPath$$/{{.FolderName}}/{{printf "%02d" .Index}}.m4a</sm2> [[{{.Name}}]]{{if .HasAlternateLeadVocalist}} (*){{end}}
+{{range .Tracks}}{{.LinePrefix}}[{{.Duration}}] <sm2>$$streamPath$$/{{.FolderName}}/{{printf "%02d" .Index}}.m4a</sm2> [[{{.Name}}]]{{if .HasAlternateLeadVocalist}} {{"{{"}}tt|(*)|Vocals by Martin Gore{{"}}"}}{{end}}
 {{end}}*Total time: {{.Duration}}
 
 == Lineage ==
