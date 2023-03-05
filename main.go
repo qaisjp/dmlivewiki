@@ -12,10 +12,10 @@ import (
 var metaflacPath string
 
 func findMetaflac() (string, error) {
-	// cwd, err := os.Getwd()
-	// if err != nil {
-	// 	return "", err
-	// }
+	cwd, err := os.Getwd()
+	if err != nil {
+		return "", err
+	}
 
 	// _, err = os.Stat("./metaflac")
 	// if err == nil {
@@ -25,7 +25,7 @@ func findMetaflac() (string, error) {
 
 	path, err := exec.LookPath("metaflac")
 	if errors.Is(err, exec.ErrDot) {
-		return path, nil
+		return cwd+"/"+path, nil
 	} else if err != nil {
 		return "", err
 	}
