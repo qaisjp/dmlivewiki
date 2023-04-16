@@ -37,10 +37,10 @@ type TrackData struct {
 
 func getTourFromTourFile(filepath string, tour *Tour) error {
 	file, err := os.Open(filepath)
-	defer file.Close()
 	if err != nil {
 		return errors.New("Could not open Tourfile (" + err.Error() + ")")
 	}
+	defer file.Close()
 
 	reader := bufio.NewReader(file)
 	scanner := bufio.NewScanner(reader)

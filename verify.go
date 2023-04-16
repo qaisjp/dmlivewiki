@@ -115,7 +115,6 @@ func verifyProcessPath(directory string, name string, workingDirectory string) {
 // verify an md5 file against a directory
 func verifyMD5(md5Filename string, directory string) (success, readError bool) {
 	file, err := os.Open(md5Filename)
-	defer file.Close()
 	if err != nil {
 		fmt.Printf("\n> md5: read err (%s)", err.Error())
 
@@ -123,6 +122,7 @@ func verifyMD5(md5Filename string, directory string) (success, readError bool) {
 		// for individual file read errors! this should be clearer
 		return
 	}
+	defer file.Close()
 
 	reader := bufio.NewReader(file)
 	scanner := bufio.NewScanner(reader)
@@ -153,11 +153,11 @@ func verifyMD5(md5Filename string, directory string) (success, readError bool) {
 // verify an ffp file against a directory
 func verifyFFP(ffpFilename string, directory string, workingDirectory string) (success bool) {
 	file, err := os.Open(ffpFilename)
-	defer file.Close()
 	if err != nil {
 		fmt.Printf("\n> ffp: read err (%s)", err.Error())
 		return
 	}
+	defer file.Close()
 
 	var ffpFileBuffer bytes.Buffer // contains actual ffp content
 	var files, checksums []string

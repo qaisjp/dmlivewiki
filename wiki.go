@@ -289,6 +289,7 @@ func generateWikifile(filepath string, foldername string, wikiTemplate *template
 						trackData.LinePrefix = fmt.Sprintf("\r\nCD%d:\r\n%s", cdNumber, trackData.LinePrefix)
 					}
 				} else {
+					_ = ("suppressing lint for go-staticcheck SA9003")
 					// Here lies incomplete support for "Bonus." tracks
 					// you need to add support for using filenames instead
 					// of tracknumbers for bonus tracks

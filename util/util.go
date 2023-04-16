@@ -5,7 +5,6 @@ import (
 	"io/ioutil"
 	"net/url"
 	"os"
-	"path"
 	fpath "path/filepath"
 	"strings"
 	"time"
@@ -90,14 +89,6 @@ func GetDirectorySite(filepath string) (float64, error) {
 	return size, nil
 }
 
-func getLastPathComponents(filepath string, depth int) (absPath string) {
-	for i := 1; i < depth; i++ {
-		absPath = path.Base(filepath) + "\\" + absPath
-		filepath = path.Dir(filepath)
-	}
-	return
-}
-
 func GetFileErrorReason(err error) string {
 	if os.IsNotExist(err) {
 		return "doesn't exist"
@@ -110,7 +101,9 @@ func GetFileErrorReason(err error) string {
 
 func CheckFilepathArgument(c *cli.Context) (os.FileInfo, string) {
 	if len(c.Args()) != 1 {
-		cli.ShowSubcommandHelp(c)
+		if err := cli.ShowSubcommandHelp(c); err != nil {
+			fmt.Println("Error:", err.Error())
+		}
 		return nil, ""
 	}
 
@@ -151,10 +144,7 @@ func ShouldContinue(c *cli.Context) bool {
 	fmt.Scanln(&text)
 	fmt.Print("\n")
 
-	if text != "y" {
-		return false
-	}
-	return true
+	return text == "y" || text == "Y"
 }
 
 func NotifyDeleteMode(c *cli.Context) {

@@ -78,7 +78,7 @@ func checksumProcessPath(directory string, name string, deleteMode bool, working
 	}
 
 	// This walks through every file in the folder
-	fpath.Walk(directory,
+	err := fpath.Walk(directory,
 		func(path string, info os.FileInfo, err error) error {
 			if err != nil {
 				fmt.Println("!!Encountered error for: " + path)
@@ -120,6 +120,11 @@ func checksumProcessPath(directory string, name string, deleteMode bool, working
 		},
 	)
 
+	if err != nil {
+		fmt.Println("!!Error while walking through directory: " + directory)
+		fmt.Printf("!!Error: %s\n", err.Error())
+	}
+
 	// If the pool contains atleast one **filename**
 	// the first two items in the pool is actually just a flag!
 	if len(ffpPool) > 2 {
@@ -151,13 +156,15 @@ func checksumProcessPath(directory string, name string, deleteMode bool, working
 
 		// Let's write the ffp file now
 		ffp, err := os.Create(ffpFilename)
-		defer ffp.Close()
-
 		if err != nil {
 			fmt.Println("!!Could not create ffp file: " + ffpFilename)
 			fmt.Println("!!Error: " + err.Error())
 		} else {
-			ffp.Write(data)
+			defer ffp.Close()
+			_, err := ffp.Write(data)
+			if err != nil {
+				panic(err)
+			}
 		}
 	}
 
@@ -165,13 +172,15 @@ func checksumProcessPath(directory string, name string, deleteMode bool, working
 	if md5Buffer.Len() > 0 {
 		// Let's write the md5 file
 		md5, err := os.Create(md5Filename)
-		defer md5.Close()
-
 		if err != nil {
 			fmt.Println("!!Could not create md5 file: " + md5Filename)
 			fmt.Println("!!Error: " + err.Error())
 		} else {
-			md5.Write(md5Buffer.Bytes())
+			defer md5.Close()
+			_, err := md5.Write(md5Buffer.Bytes())
+			if err != nil {
+				panic(err)
+			}
 		}
 	}
 

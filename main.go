@@ -25,7 +25,7 @@ func findMetaflac() (string, error) {
 
 	path, err := exec.LookPath("metaflac")
 	if errors.Is(err, exec.ErrDot) {
-		return cwd+"/"+path, nil
+		return cwd + "/" + path, nil
 	} else if err != nil {
 		return "", err
 	}
@@ -111,7 +111,9 @@ func main() {
 		},
 	}
 
-	app.Run(os.Args)
+	if err := app.Run(os.Args); err != nil {
+		panic(err)
+	}
 }
 
 // Information template to write .txt info files from a folder
