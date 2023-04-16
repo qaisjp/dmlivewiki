@@ -1,10 +1,10 @@
 # Used globally
-baseDomain: "https://www.depechemode-live.com"
+baseDomain: "https://dmlive.wiki"
 
 # Used by the information template
 wikiPath: "" # If you do not provide this field, it defaults to "baseDomain/wiki"
-footer: "Torrent downloaded from https://www.depechemode-live.com"
+footer: "(*) indicates lead vocals by Martin Gore\n\nRecording freely provided by the Depeche Mode Live Wiki: https://dmlive.wiki"
 
 # Used by the wiki template
-streamPath: "https://media.depechemode-live.com/stream"
-torrentPath: "" # If you do not provide this field, it defaults to "baseDomain/torrents"
+streamPath: "https://media.dmlive.wiki/stream"
+downloadPath: "" # If you do not provide this field, it defaults to "baseDomain/downloads"
