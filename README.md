@@ -6,10 +6,12 @@ Use `dmlivewiki help` for help.
 
 ## Commands
 
-- `dmlivewiki generate --tour "<tour name>" <directory>`
+__dmlivewiki__ operates in batch mode by default. Use the `-s` flag to indicate that the action should be performed against a singular folder instead.
+
+- `dmlivewiki generate <directory> --tour "<tour name>" --tour-file <tourfile.txt>`
     - Generates an information file (`.txt`) of each album in a given directory. The information file will contain the name of the tour that has been given.
 - `dmlivewiki checksum <directory>`
-    - Performs a checksum of each album in the given directory, placing a `.ffp` and `.md5` in each album.
+    - Performs a checksum of each album in the given directory, placing `.ffp` and `.md5` checksum files in each folder.
 - `dmlivewiki verify <directory>`
     - Verifies the contents of files listed in the `.ffp` and `.md5` files.
 - `dmlivewiki wiki <directory>`
@@ -18,7 +20,6 @@ Use `dmlivewiki help` for help.
     - For batch mode, it creates a folder called `__wikifiles` in the tour folder, and places `.wiki` files there instead of inside each album.
 - `dmlivewiki find <directory>`
     - Looks through each information file in a given directory, and reports the absence of defined notes.
-
 
 ## Directory structure
 ```
