@@ -20,7 +20,9 @@ func generateInformation(c *cli.Context) {
 
 	tourName := c.String("tour")
 	if tourName == "" {
-		cli.ShowSubcommandHelp(c)
+		if err := cli.ShowSubcommandHelp(c); err != nil {
+			panic(err)
+		}
 		return
 	}
 
