@@ -9,11 +9,11 @@ import (
 )
 
 var config struct {
-	BaseDomain  string `yaml:"baseDomain"`
-	WikiPath    string `yaml:"wikiPath"`
-	StreamPath  string `yaml:"streamPath"`
-	TorrentPath string `yaml:"torrentPath"`
-	Footer      string `yaml:"footer"`
+	BaseDomain   string `yaml:"baseDomain"`
+	WikiPath     string `yaml:"wikiPath"`
+	StreamPath   string `yaml:"streamPath"`
+	DownloadPath string `yaml:"downloadPath"`
+	Footer       string `yaml:"footer"`
 }
 
 func parseConfig(path string) (err error) {
@@ -47,15 +47,15 @@ func parseConfig(path string) (err error) {
 		config.WikiPath = config.BaseDomain + "/wiki"
 	}
 
-	if config.TorrentPath == "" {
-		config.TorrentPath = config.BaseDomain + "/torrents"
+	if config.DownloadPath == "" {
+		config.DownloadPath = config.BaseDomain + "/downloads"
 	}
 
 	informationTemplate = strings.Replace(informationTemplate, "$$wikiPath$$", config.WikiPath, -1)
 	informationTemplate = strings.Replace(informationTemplate, "$$footer$$", config.Footer, -1)
 
 	wikiTemplate = strings.Replace(wikiTemplate, "$$streamPath$$", config.StreamPath, -1)
-	wikiTemplate = strings.Replace(wikiTemplate, "$$torrentPath$$", config.TorrentPath, -1)
+	wikiTemplate = strings.Replace(wikiTemplate, "$$downloadPath$$", config.DownloadPath, -1)
 
 	return
 }

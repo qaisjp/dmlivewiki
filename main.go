@@ -25,7 +25,7 @@ func findMetaflac() (string, error) {
 
 	path, err := exec.LookPath("metaflac")
 	if errors.Is(err, exec.ErrDot) {
-		return cwd+"/"+path, nil
+		return cwd + "/" + path, nil
 	} else if err != nil {
 		return "", err
 	}
@@ -155,7 +155,7 @@ You can listen to this entire recording below.
 {{.Lineage}}
 == Download ==
 
-*[$$torrentPath$$/{{.FolderName}}.zip Download ZIP] - FLAC {{.BPS}}-bit {{.SampleRate}} - {{.Size}}
+*[$$downloadPath$$/{{.FolderName}}.zip Download ZIP] - FLAC {{.BPS}}-bit {{.SampleRate}} - {{.Size}}
 
 [[Category:Audience recordings]]
 [[Category:Source]]
